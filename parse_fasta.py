@@ -13,5 +13,5 @@ def parse_fasta(filename: str) -> Dict[str, str]:
         else:
             if sequences.get(currentKey) is None:
                 sequences[currentKey] = ""
-            sequences[currentKey] += line.strip()
+            sequences[currentKey] += line.strip().upper()
     return sequences
