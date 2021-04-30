@@ -4,22 +4,9 @@ from data_index import CAMELLIA_GENOME, TEA015198
 from parse_fasta import parse_fasta
 
 
-NUCLEOTIDE_INVERSIONS = {
-    "G": "C",
-    "C": "G",
-    "A": "T",
-    "T": "A",
-}
-
-
 def get_data(filename: str) -> str:
     """Gets the relative file path for the provided file."""
     return "./data/" + filename
-
-
-def invert_nucleotides(nucleotides: str) -> str:
-    """Inverts a nucelotide sequence."""
-    return "".join([NUCLEOTIDE_INVERSIONS[n] for n in nucleotides])
 
 
 def check_occurrences(needle: str, haystacks: Iterator[str]) -> int:
@@ -36,7 +23,7 @@ if __name__ == "__main__":
     print(
         check_occurrences(
             # Pass in only the actual dataset sequences, not sequence names
-            invert_nucleotides(cstsi_mrna),
+            cstsi_mrna,
             map(lambda seq: seq[1], genome),
         )
     )
