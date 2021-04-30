@@ -1,4 +1,4 @@
-from typing import Iterator, Tuple
+from typing import Iterator
 
 from data_index import CAMELLIA_GENOME, TEA015198
 from parse_fasta import parse_fasta
