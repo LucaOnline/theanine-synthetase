@@ -16,5 +16,6 @@ def parse_fasta(filename: str) -> Iterator[Tuple[str, str]]:
         else:
             currentSeq.append(line.strip().upper())
 
+    # Return last pair, if it exists
     if currentKey != "":
         yield currentKey, "".join(currentSeq)
