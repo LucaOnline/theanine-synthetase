@@ -9,7 +9,7 @@ def get_data(filename: str) -> str:
 
 
 def check_occurrences(needle: str, haystacks: Iterator[Tuple[str, str]]) -> int:
-    return list(map(lambda haystack: 1 if needle in haystack[1] else 0, haystacks))
+    return sum(map(lambda haystack: haystack[1].count(needle), haystacks))
 
 
 if __name__ == "__main__":
