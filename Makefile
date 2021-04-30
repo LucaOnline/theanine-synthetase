@@ -12,3 +12,9 @@ help: ## Show this help
 
 install: ## Install project dependencies
 	$(PYTHON_EXEC) -m pip install -r requirements.txt
+
+data: ## Download datasets
+	$(PYTHON_EXEC) download_data.py
+
+check_occurrences: ## Calculate the number of occurrences of TEA015198 in a dataset
+	$(PYTHON_EXEC) check_occurrences.py
