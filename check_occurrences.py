@@ -1,6 +1,6 @@
 from typing import Iterator
 
-from data_index import CAMELLIA_GENOME, TEA015198
+from data_index import CAMELLIA_GENOME, THEANINE_SYNTHETASE
 from parse_fasta import parse_fasta
 
 
@@ -19,7 +19,7 @@ def check_occurrences(needle: str, haystacks: Iterator[str]) -> int:
 
 if __name__ == "__main__":
     genome = parse_fasta(get_data(CAMELLIA_GENOME))
-    cstsi_mrna = list(parse_fasta(get_data(TEA015198)))[0][1]
+    cstsi_mrna = list(parse_fasta(get_data(THEANINE_SYNTHETASE)))[0][1]
     print(
         check_occurrences(
             # Pass in only the actual dataset sequences, not sequence names
