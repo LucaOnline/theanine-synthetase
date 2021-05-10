@@ -19,4 +19,4 @@ data: ## Download datasets
 	$(PYTHON_EXEC) download_data.py
 
 analyze: ## Run the analysis
-	$(PYTHON_EXEC) check_occurrences.py
+	$(PYTHON_EXEC) analysis.py
