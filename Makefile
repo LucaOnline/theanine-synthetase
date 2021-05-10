@@ -18,5 +18,5 @@ install: ## Install project dependencies
 data: ## Download datasets
 	$(PYTHON_EXEC) download_data.py
 
-check_occurrences: ## Calculate the number of occurrences of TEA015198 in a dataset
+analyze: ## Run the analysis
 	$(PYTHON_EXEC) check_occurrences.py

@@ -1,6 +1,4 @@
-from typing import Iterator
-
-from data_index import CAMELLIA_GENOME, THEANINE_SYNTHETASE
+from data_index import GLUTAMINE_SYNTHETASE, THEANINE_SYNTHETASE
 from parse_fasta import parse_fasta
 
 
@@ -9,21 +7,8 @@ def get_data(filename: str) -> str:
     return "./data/" + filename
 
 
-def check_occurrences(needle: str, haystacks: Iterator[str]) -> int:
-    """
-    Returns the number of occurrences of the provided needle
-    in the iterator of haystacks.
-    """
-    return sum(map(lambda haystack: haystack.count(needle), haystacks))
-
-
 if __name__ == "__main__":
-    genome = parse_fasta(get_data(CAMELLIA_GENOME))
+    csgsi_mrna = list(parse_fasta(get_data(GLUTAMINE_SYNTHETASE)))[0][1]
     cstsi_mrna = list(parse_fasta(get_data(THEANINE_SYNTHETASE)))[0][1]
-    print(
-        check_occurrences(
-            # Pass in only the actual dataset sequences, not sequence names
-            cstsi_mrna,
-            map(lambda seq: seq[1], genome),
-        )
-    )
+    print(csgsi_mrna)
+    print(cstsi_mrna)
