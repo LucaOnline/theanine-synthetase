@@ -66,7 +66,7 @@ class AlignmentResult:
                 current_mismatch += 1
                 if current_mismatch > largest_mismatch:
                     largest_mismatch = current_mismatch
-                    largest_mismatch_pos = i - largest_mismatch
+                    largest_mismatch_pos = i - largest_mismatch + 1
             else:
                 current_mismatch = 0
         if found_mismatch:
