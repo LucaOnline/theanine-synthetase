@@ -13,3 +13,11 @@ if __name__ == "__main__":
     cstsi_mrna = list(parse_fasta(get_data(THEANINE_SYNTHETASE)))[0][1]
     alignment_result = align_sequences(csgsi_mrna, cstsi_mrna, nucleotides=True)
     alignment_result.examine()
+    print(
+        "Percent similarity:",
+        1
+        - (
+            alignment_result.hamming_distance()
+            / alignment_result.get_alignment_length()
+        ),
+    )

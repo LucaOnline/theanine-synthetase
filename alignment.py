@@ -19,8 +19,22 @@ CHEMICAL_CLASS = {
 
 class AlignmentResult:
     def __init__(self, alignment_1: str, alignment_2: str):
+        if len(alignment_1) != len(alignment_2):
+            raise ValueError("input strings have differing lengths")
         self.alignment_1 = alignment_1
         self.alignment_2 = alignment_2
+
+    def get_alignment_length(self) -> int:
+        """Returns the length of the alignment."""
+        return len(self.alignment_1)
+
+    def get_alignment_1(self) -> str:
+        """Returns the first alignment string."""
+        return self.alignment_1
+
+    def get_alignment_2(self) -> str:
+        """Returns the second alignment string."""
+        return self.alignment_2
 
     def get_match_string(self) -> str:
         """Returns the match string for the alignment."""
@@ -32,8 +46,12 @@ class AlignmentResult:
         )
 
     def matches(self) -> int:
-        """Returns the number of matching nucleotides for the alignment."""
+        """Returns the number of matching elements for the alignment."""
         return self.get_match_string().count("|")
+
+    def hamming_distance(self) -> int:
+        """Returns the Hamming distance between the two strings."""
+        return len(self.alignment_1) - self.matches()
 
     def examine(self, line_length: int = 80):
         """
