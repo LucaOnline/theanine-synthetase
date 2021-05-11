@@ -10,6 +10,17 @@ def get_data(filename: str) -> str:
     return "./data/" + filename
 
 
+def make_output_dir():
+    """Creates the output file directory, if it doesn't exist."""
+    if not os.path.exists("./output"):
+        os.mkdir("./output")
+
+
+def get_output(filename: str) -> str:
+    """Gets the relative file path for the provided output file."""
+    return "./output/" + filename
+
+
 if __name__ == "__main__":
     cstsi_mrna = list(parse_fasta(get_data(CSTSI)))[0][1]
 
@@ -28,11 +39,10 @@ if __name__ == "__main__":
         )
 
         # Output Supplementary Data 4
-        if not os.path.exists("./output"):
-            os.mkdir("./output")
-        with open(f"./output/{sequence}.aln.txt", "w+") as f:
+        make_output_dir()
+        with open(get_output(sequence + ".aln.txt"), "w+") as f:
             f.write(alignment_result.format_result(line_length=100))
-        with open(f"./output/{sequence}.meta.txt", "w+") as f:
+        with open(get_output(sequence + ".meta.txt"), "w+") as f:
             f.write(
                 f"Percent similarity: {percent_similarity}\nLargest mismatch location: {largest_mismatch_pos}\nLargest mismatch size: {largest_mismatch}bp\n"
             )
