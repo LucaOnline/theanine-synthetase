@@ -84,8 +84,7 @@ class AlignmentResult:
                 for i in range(len(match_lines))
             ]
         )
-        
-    
+
     def examine(self, line_length: int = 80):
         """
         Formats and prints the found alignment with pipes between
@@ -103,6 +102,7 @@ def backtrack(quad: np.ndarray) -> EditMove:
     elif quad.shape == (2, 0):
         return MOVE_RIGHT
 
+    # numpy's argmax doesn't allow for prioritizing non-indels
     next_pos = (0, 0)
     if quad[0, 1] > quad[next_pos]:
         next_pos = (0, 1)
