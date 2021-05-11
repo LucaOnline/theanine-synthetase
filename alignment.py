@@ -22,6 +22,19 @@ class AlignmentResult:
         self.alignment_1 = alignment_1
         self.alignment_2 = alignment_2
 
+    def get_match_string(self) -> str:
+        """Returns the match string for the alignment."""
+        return "".join(
+            [
+                "|" if self.alignment_1[i] == self.alignment_2[i] else " "
+                for i in range(len(self.alignment_1))
+            ]
+        )
+
+    def matches(self) -> int:
+        """Returns the number of matching nucleotides for the alignment."""
+        return self.get_match_string().count("|")
+
     def examine(self, line_length: int = 80):
         """
         Formats and prints the found alignment with pipes between
@@ -29,12 +42,7 @@ class AlignmentResult:
         allows for adjusting the number of elements on each set of
         lines.
         """
-        matches = "".join(
-            [
-                "|" if self.alignment_1[i] == self.alignment_2[i] else " "
-                for i in range(len(self.alignment_1))
-            ]
-        )
+        matches = self.get_match_string()
 
         # Chunk lines
         alignment_1_lines = [
