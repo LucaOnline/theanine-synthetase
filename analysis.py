@@ -13,4 +13,5 @@ if __name__ == "__main__":
     cstsi_mrna = list(parse_fasta(get_data(THEANINE_SYNTHETASE)))[0][1]
     al1, al2 = align_sequences("GCATGCT", "GATTACA")
     print(al1)
+    print("".join(["|" if al1[i] == al2[i] else " " for i in range(len(al1))]))
     print(al2)

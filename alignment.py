@@ -10,25 +10,28 @@ EditMove = Literal[MOVE_DIAGONAL, MOVE_RIGHT, MOVE_DOWN]
 
 
 def backtrack(quad: np.ndarray) -> EditMove:
-    print(quad)
+    """Trace one step back through an edit matrix."""
     if quad.shape == (0, 2):
         return MOVE_DOWN
     elif quad.shape == (2, 0):
         return MOVE_RIGHT
 
-    quad_copy = np.copy(quad)
-    quad_copy[1, 1] = np.iinfo(quad.dtype).min
-    next_pos = np.argmax(quad_copy, axis=1)
-    print(next_pos)
-    if np.all(next_pos == [0, 0]):
+    next_pos = (0, 0)
+    if quad[0, 1] > quad[next_pos]:
+        next_pos = (0, 1)
+    if quad[1, 0] > quad[next_pos]:
+        next_pos = (1, 0)
+
+    if next_pos == (0, 0):
         return MOVE_DIAGONAL
-    elif np.all(next_pos == [1, 0]):
-        return MOVE_DOWN
-    else:
+    elif next_pos == (0, 1):
         return MOVE_RIGHT
+    else:
+        return MOVE_DOWN
 
 
 def score_cell(quad: np.ndarray, top_char: str, left_char: str) -> np.int:
+    """Calculate the Needleman-Wunsch score for a cell."""
     down_score = quad[0, 1] - 1
     right_score = quad[1, 0] - 1
     diag_score = quad[0, 0] - 1
@@ -39,7 +42,7 @@ def score_cell(quad: np.ndarray, top_char: str, left_char: str) -> np.int:
 
 def align_sequences(top_seq: str, left_seq: str) -> Tuple[str, str]:
     """
-    This function aligns the two provided sequences using Needleman-Wunsh
+    This function aligns the two provided sequences using Needleman-Wunsch
     alignment. It uses a scoring scheme with a gap penalty of -1, a match
     bonus of 1, and a mismatch penalty of -1.
     """
@@ -68,23 +71,17 @@ def align_sequences(top_seq: str, left_seq: str) -> Tuple[str, str]:
     while bt_x != 0 or bt_y != 0:
         next_move = backtrack(search[bt_x - 1 : bt_x + 1, bt_y - 1 : bt_y + 1])
         if next_move == MOVE_DIAGONAL:
-            print("moved diagonal")
             final_top = top_seq[bt_x - 1] + final_top
             final_left = left_seq[bt_y - 1] + final_left
             bt_x -= 1
             bt_y -= 1
         elif next_move == MOVE_DOWN:
-            print("moved up")
             final_top = "-" + final_top
             final_left = left_seq[bt_y - 1] + final_left
             bt_y -= 1
         elif next_move == MOVE_RIGHT:
-            print("moved left")
             final_top = top_seq[bt_x - 1] + final_top
             final_left = "-" + final_left
             bt_x -= 1
-        print(final_top)
-        print(final_left)
-    print(search)
 
     return (final_top, final_left)
