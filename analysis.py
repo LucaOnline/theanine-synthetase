@@ -11,4 +11,6 @@ def get_data(filename: str) -> str:
 if __name__ == "__main__":
     csgsi_mrna = list(parse_fasta(get_data(GLUTAMINE_SYNTHETASE)))[0][1]
     cstsi_mrna = list(parse_fasta(get_data(THEANINE_SYNTHETASE)))[0][1]
-    align_sequences("GCATGCT", "GATTACA")
+    al1, al2 = align_sequences("GCATGCT", "GATTACA")
+    print(al1)
+    print(al2)

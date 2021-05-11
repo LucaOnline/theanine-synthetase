@@ -1,6 +1,31 @@
-from typing import Tuple
+from typing import Tuple, Literal
 
 import numpy as np
+
+
+MOVE_DIAGONAL = 0
+MOVE_RIGHT = 1
+MOVE_DOWN = 2
+EditMove = Literal[MOVE_DIAGONAL, MOVE_RIGHT, MOVE_DOWN]
+
+
+def backtrack(quad: np.ndarray) -> EditMove:
+    print(quad)
+    if quad.shape == (0, 2):
+        return MOVE_DOWN
+    elif quad.shape == (2, 0):
+        return MOVE_RIGHT
+
+    quad_copy = np.copy(quad)
+    quad_copy[1, 1] = np.iinfo(quad.dtype).min
+    next_pos = np.argmax(quad_copy, axis=1)
+    print(next_pos)
+    if np.all(next_pos == [0, 0]):
+        return MOVE_DIAGONAL
+    elif np.all(next_pos == [1, 0]):
+        return MOVE_DOWN
+    else:
+        return MOVE_RIGHT
 
 
 def score_cell(quad: np.ndarray, top_char: str, left_char: str) -> np.int:
@@ -27,7 +52,7 @@ def align_sequences(top_seq: str, left_seq: str) -> Tuple[str, str]:
     search[0] = [i for i in range(0, -size1, -1)]
     search[:, 0] = [i for i in range(0, -size2, -1)]
 
-    # Do calculation
+    # Do scoring
     for x in range(1, size1):
         for y in range(1, size2):
             search[x, y] = score_cell(
@@ -39,8 +64,27 @@ def align_sequences(top_seq: str, left_seq: str) -> Tuple[str, str]:
     final_top = ""
     final_left = ""
 
-    # TODO backtracking
-
+    bt_x, bt_y = (size1 - 1, size2 - 1)
+    while bt_x != 0 or bt_y != 0:
+        next_move = backtrack(search[bt_x - 1 : bt_x + 1, bt_y - 1 : bt_y + 1])
+        if next_move == MOVE_DIAGONAL:
+            print("moved diagonal")
+            final_top = top_seq[bt_x - 1] + final_top
+            final_left = left_seq[bt_y - 1] + final_left
+            bt_x -= 1
+            bt_y -= 1
+        elif next_move == MOVE_DOWN:
+            print("moved up")
+            final_top = "-" + final_top
+            final_left = left_seq[bt_y - 1] + final_left
+            bt_y -= 1
+        elif next_move == MOVE_RIGHT:
+            print("moved left")
+            final_top = top_seq[bt_x - 1] + final_top
+            final_left = "-" + final_left
+            bt_x -= 1
+        print(final_top)
+        print(final_left)
     print(search)
 
     return (final_top, final_left)
