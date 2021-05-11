@@ -1,3 +1,5 @@
+import os
+
 from alignment import align_sequences
 from data_index import GLUTAMINE_SYNTHETASE, THEANINE_SYNTHETASE
 from parse_fasta import parse_fasta
@@ -21,3 +23,9 @@ if __name__ == "__main__":
             / alignment_result.get_alignment_length()
         ),
     )
+
+    # Output Supplementary Data 4
+    if not os.path.exists("./output"):
+        os.mkdir("./output")
+    with open("./output/supplementary_data_4.txt", "w+") as f:
+        f.write(alignment_result.format_result())

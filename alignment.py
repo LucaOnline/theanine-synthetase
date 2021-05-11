@@ -53,9 +53,9 @@ class AlignmentResult:
         """Returns the Hamming distance between the two strings."""
         return len(self.alignment_1) - self.matches()
 
-    def examine(self, line_length: int = 80):
+    def format_result(self, line_length: int = 80):
         """
-        Formats and prints the found alignment with pipes between
+        Formats the found alignment with pipes between
         matching elements. The optional `line_length` parameter
         allows for adjusting the number of elements on each set of
         lines.
@@ -75,17 +75,25 @@ class AlignmentResult:
             matches[i : i + line_length] for i in range(0, len(matches), line_length)
         ]
 
-        # Print line chunks in order
-        print(
-            "\n".join(
-                [
-                    "\n".join(
-                        [alignment_1_lines[i], match_lines[i], alignment_2_lines[i], ""]
-                    )
-                    for i in range(len(match_lines))
-                ]
-            )
+        # Output line chunks in order
+        return "\n".join(
+            [
+                "\n".join(
+                    [alignment_1_lines[i], match_lines[i], alignment_2_lines[i], ""]
+                )
+                for i in range(len(match_lines))
+            ]
         )
+        
+    
+    def examine(self, line_length: int = 80):
+        """
+        Formats and prints the found alignment with pipes between
+        matching elements. The optional `line_length` parameter
+        allows for adjusting the number of elements on each set of
+        lines.
+        """
+        print(self.format_result(line_length=line_length))
 
 
 def backtrack(quad: np.ndarray) -> EditMove:
