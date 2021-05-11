@@ -115,17 +115,17 @@ def align_sequences(
     size2 = len(left_seq) + 1
 
     # Build search matrix
-    search = np.zeros((size1, size2), dtype=np.int)
+    search = np.zeros((size2, size1), dtype=np.int)
     search[0] = [i for i in range(0, -size1, -1)]
     search[:, 0] = [i for i in range(0, -size2, -1)]
 
     # Do scoring
-    for x in range(1, size1):
-        for y in range(1, size2):
+    for x in range(1, size2):
+        for y in range(1, size1):
             search[x, y] = score_cell(
                 search[x - 1 : x + 1, y - 1 : y + 1],
-                top_seq[x - 1],
-                left_seq[y - 1],
+                top_seq[y - 1],
+                left_seq[x - 1],
                 nucleotides,
             )
     search = search.T
