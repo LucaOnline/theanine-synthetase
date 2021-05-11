@@ -9,6 +9,14 @@ MOVE_DOWN = 2
 EditMove = Literal[MOVE_DIAGONAL, MOVE_RIGHT, MOVE_DOWN]
 
 
+CHEMICAL_CLASS = {
+    "A": "Purine",
+    "G": "Purine",
+    "T": "Pyrimidine",
+    "C": "Pyrimidine",
+}
+
+
 class AlignmentResult:
     def __init__(self, alignment_1: str, alignment_2: str):
         self.alignment_1 = alignment_1
@@ -75,21 +83,32 @@ def backtrack(quad: np.ndarray) -> EditMove:
         return MOVE_DOWN
 
 
-def score_cell(quad: np.ndarray, top_char: str, left_char: str) -> np.int:
+def score_cell(
+    quad: np.ndarray, top_char: str, left_char: str, nucleotides: bool
+) -> np.int:
     """Calculate the Needleman-Wunsch score for a cell."""
     down_score = quad[0, 1] - 1
     right_score = quad[1, 0] - 1
+
+    # Penalize transversions more heavily
+    if nucleotides and CHEMICAL_CLASS[top_char] != CHEMICAL_CLASS[left_char]:
+        down_score -= 1
+        right_score -= 1
+
     diag_score = quad[0, 0] - 1
     if top_char == left_char:
         diag_score += 2
     return max([down_score, right_score, diag_score])
 
 
-def align_sequences(top_seq: str, left_seq: str) -> AlignmentResult:
+def align_sequences(
+    top_seq: str, left_seq: str, nucleotides: bool = True
+) -> AlignmentResult:
     """
     This function aligns the two provided sequences using Needleman-Wunsch
     alignment. It uses a scoring scheme with a gap penalty of -1, a match
-    bonus of 1, and a mismatch penalty of -1.
+    bonus of 1, and a mismatch penalty of -1. If the two sequences are
+    `nucleotides`, then an additional -1 penalty is applied to transversions.
     """
 
     size1 = len(top_seq) + 1
@@ -104,7 +123,10 @@ def align_sequences(top_seq: str, left_seq: str) -> AlignmentResult:
     for x in range(1, size1):
         for y in range(1, size2):
             search[x, y] = score_cell(
-                search[x - 1 : x + 1, y - 1 : y + 1], top_seq[x - 1], left_seq[y - 1]
+                search[x - 1 : x + 1, y - 1 : y + 1],
+                top_seq[x - 1],
+                left_seq[y - 1],
+                nucleotides,
             )
     search = search.T
 
