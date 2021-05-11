@@ -50,8 +50,28 @@ class AlignmentResult:
         return self.get_match_string().count("|")
 
     def hamming_distance(self) -> int:
-        """Returns the Hamming distance between the two strings."""
+        """Returns the Hamming distance of the alignment."""
         return len(self.alignment_1) - self.matches()
+
+    def largest_mismatch(self) -> Tuple[int, int]:
+        """Returns the position and size of the largest mismatch in the alignment."""
+        matches = self.get_match_string()
+        found_mismatch = False
+        largest_mismatch = 0
+        largest_mismatch_pos = 0
+        current_mismatch = 0
+        for i, c in enumerate(matches):
+            if c == " ":
+                found_mismatch = True
+                current_mismatch += 1
+                if current_mismatch > largest_mismatch:
+                    largest_mismatch = current_mismatch
+                    largest_mismatch_pos = i - largest_mismatch
+            else:
+                current_mismatch = 0
+        if found_mismatch:
+            return (largest_mismatch_pos, largest_mismatch)
+        return (-1, 0)
 
     def format_result(self, line_length: int = 80):
         """
