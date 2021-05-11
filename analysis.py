@@ -1,3 +1,4 @@
+from alignment import align_sequences
 from data_index import GLUTAMINE_SYNTHETASE, THEANINE_SYNTHETASE
 from parse_fasta import parse_fasta
 
@@ -10,5 +11,4 @@ def get_data(filename: str) -> str:
 if __name__ == "__main__":
     csgsi_mrna = list(parse_fasta(get_data(GLUTAMINE_SYNTHETASE)))[0][1]
     cstsi_mrna = list(parse_fasta(get_data(THEANINE_SYNTHETASE)))[0][1]
-    print(csgsi_mrna)
-    print(cstsi_mrna)
+    align_sequences("GCATGCT", "GATTACA")
