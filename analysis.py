@@ -1,7 +1,7 @@
 import os
 
 from alignment import align_sequences
-from data_index import PAGS, CGGS, HSGS, VVGS, CSGSI, CSTSI
+from data_index import DATA_URLS, CSTSI
 from parse_fasta import parse_fasta
 
 
@@ -13,7 +13,8 @@ def get_data(filename: str) -> str:
 if __name__ == "__main__":
     cstsi_mrna = list(parse_fasta(get_data(CSTSI)))[0][1]
 
-    test_sequences = [PAGS, CGGS, HSGS, VVGS, CSGSI]
+    # Analyze all GS sequences downloaded
+    test_sequences = [seq for seq in DATA_URLS.keys() if seq != CSTSI]
     for sequence in test_sequences:
         print("Analyzing %s..." % sequence)
 
