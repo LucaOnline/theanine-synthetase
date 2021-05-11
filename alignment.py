@@ -9,6 +9,51 @@ MOVE_DOWN = 2
 EditMove = Literal[MOVE_DIAGONAL, MOVE_RIGHT, MOVE_DOWN]
 
 
+class AlignmentResult:
+    def __init__(self, alignment_1: str, alignment_2: str):
+        self.alignment_1 = alignment_1
+        self.alignment_2 = alignment_2
+
+    def examine(self, line_length: int = 80):
+        """
+        Formats and prints the found alignment with pipes between
+        matching elements. The optional `line_length` parameter
+        allows for adjusting the number of elements on each set of
+        lines.
+        """
+        matches = "".join(
+            [
+                "|" if self.alignment_1[i] == self.alignment_2[i] else " "
+                for i in range(len(self.alignment_1))
+            ]
+        )
+
+        # Chunk lines
+        alignment_1_lines = [
+            self.alignment_1[i : i + line_length]
+            for i in range(0, len(self.alignment_1), line_length)
+        ]
+        alignment_2_lines = [
+            self.alignment_2[i : i + line_length]
+            for i in range(0, len(self.alignment_2), line_length)
+        ]
+        match_lines = [
+            matches[i : i + line_length] for i in range(0, len(matches), line_length)
+        ]
+
+        # Print line chunks in order
+        print(
+            "\n".join(
+                [
+                    "\n".join(
+                        [alignment_1_lines[i], match_lines[i], alignment_2_lines[i], ""]
+                    )
+                    for i in range(len(match_lines))
+                ]
+            )
+        )
+
+
 def backtrack(quad: np.ndarray) -> EditMove:
     """Trace one step back through an edit matrix."""
     if quad.shape == (0, 2):
@@ -40,7 +85,7 @@ def score_cell(quad: np.ndarray, top_char: str, left_char: str) -> np.int:
     return max([down_score, right_score, diag_score])
 
 
-def align_sequences(top_seq: str, left_seq: str) -> Tuple[str, str]:
+def align_sequences(top_seq: str, left_seq: str) -> AlignmentResult:
     """
     This function aligns the two provided sequences using Needleman-Wunsch
     alignment. It uses a scoring scheme with a gap penalty of -1, a match
@@ -84,4 +129,4 @@ def align_sequences(top_seq: str, left_seq: str) -> Tuple[str, str]:
             final_left = "-" + final_left
             bt_x -= 1
 
-    return (final_top, final_left)
+    return AlignmentResult(final_top, final_left)
