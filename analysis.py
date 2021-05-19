@@ -2,7 +2,6 @@ import os
 
 from alignment import align_sequences
 from data_index import DATA_URLS, CSTSI
-from nuc_to_protein import to_protein
 from parse_fasta import parse_fasta
 
 
@@ -23,15 +22,15 @@ def get_output(filename: str) -> str:
 
 
 if __name__ == "__main__":
-    cstsi_mrna = to_protein(list(parse_fasta(get_data(CSTSI)))[0][1])
+    cstsi_mrna = list(parse_fasta(get_data(CSTSI)))[0][1]
 
     # Analyze all GS sequences downloaded
     test_sequences = [seq for seq in DATA_URLS.keys() if seq != CSTSI]
     for sequence in test_sequences:
         print("Analyzing %s..." % sequence)
 
-        test_mrna = to_protein(list(parse_fasta(get_data(sequence)))[0][1])
-        alignment_result = align_sequences(test_mrna, cstsi_mrna, nucleotides=False)
+        test_mrna = list(parse_fasta(get_data(sequence)))[0][1]
+        alignment_result = align_sequences(test_mrna, cstsi_mrna, nucleotides=True)
 
         largest_mismatch_pos, largest_mismatch = alignment_result.largest_mismatch()
         percent_similarity = 1 - (
