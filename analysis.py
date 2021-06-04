@@ -33,7 +33,7 @@ if __name__ == "__main__":
 
     print(
         "Variance between clusters: "
-        + str(alignment_result.clustered_mismatch_variance(cluster_size=15))
+        + str(alignment_result.clustered_mismatch_variance(cluster_count=15))
     )
 
     largest_mismatch_pos, largest_mismatch = alignment_result.largest_mismatch()
@@ -59,7 +59,7 @@ if __name__ == "__main__":
 
     print(
         "Variance between clusters (shuffled sequence): "
-        + str(rand_alignment_result.clustered_mismatch_variance(cluster_size=15))
+        + str(rand_alignment_result.clustered_mismatch_variance(cluster_count=15))
     )
 
     (

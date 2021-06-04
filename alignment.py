@@ -1,4 +1,5 @@
 from typing import Tuple, Literal, List
+from math import ceil
 
 import numpy as np
 
@@ -47,31 +48,35 @@ class AlignmentResult:
             ]
         )
 
-    def clustered_mismatches(self, cluster_size: int = 6) -> List[int]:
+    def clustered_mismatches(self, cluster_count: int = 6) -> List[int]:
         """
-        Breaks the alignment into clusters of `cluster_size` and
+        Breaks the alignment into `cluster_count` clusters and
         returns the number of mismatches in each cluster. If the
-        alignment length modulo `cluster_size` is not zero, this
-        leaves the last cluster with the remainder of the
-        mismatches.
+        alignment cannot be equally divided into the number of
+        clusters, this leaves the last cluster with the remainder
+        of the mismatches.
         """
-        if cluster_size < 1:
-            raise ValueError("cluster size must be greater than or equal to 1")
+        if cluster_count < 1:
+            raise ValueError("cluster count must be greater than or equal to 1")
 
         match_string = self.get_match_string()
+
+        cluster_size = ceil(len(match_string) / cluster_count)
+
         return [
             match_string[i * cluster_size : i * cluster_size + cluster_size].count(" ")
             for i in range(0, len(match_string) // cluster_size)
         ]
 
-    def clustered_mismatch_variance(self, cluster_size: int = 6) -> float:
+    def clustered_mismatch_variance(self, cluster_count: int = 6) -> float:
         """
-        Returns the variance between the mismatch clusters of size
-        `cluster_size`. The raw cluster mismatches can be retrieved
-        with the `clustered_mismatches` method.
+        Returns the variance between the mismatch clusters. The
+        raw cluster mismatches can be retrieved with the
+        `clustered_mismatches` method. `cluster_count` controls
+        the number of clusters used.
         """
         return variance(
-            self.clustered_mismatches(cluster_size=cluster_size), sample=False
+            self.clustered_mismatches(cluster_count=cluster_count), sample=False
         )
 
     def matches(self) -> int:
