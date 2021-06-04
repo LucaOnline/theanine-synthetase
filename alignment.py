@@ -2,6 +2,8 @@ from typing import Tuple, Literal, List
 
 import numpy as np
 
+from stats import variance
+
 
 MOVE_DIAGONAL = 0
 MOVE_RIGHT = 1
@@ -45,7 +47,7 @@ class AlignmentResult:
             ]
         )
 
-    def clustered_mismatches(self, cluster_size: int) -> List[int]:
+    def clustered_mismatches(self, cluster_size: int = 6) -> List[int]:
         """
         Breaks the alignment into clusters of `cluster_size` and
         returns the number of mismatches in each cluster. If the
@@ -61,6 +63,16 @@ class AlignmentResult:
             match_string[i * cluster_size : i * cluster_size + cluster_size].count(" ")
             for i in range(0, len(match_string) // cluster_size)
         ]
+
+    def clustered_mismatch_variance(self, cluster_size: int = 6) -> float:
+        """
+        Returns the variance within the mismatch clusters of size
+        `cluster_size`. The raw cluster mismatches can be retrieved
+        with the `clustered_mismatches` method.
+        """
+        return variance(
+            self.clustered_mismatches(cluster_size=cluster_size), sample=False
+        )
 
     def matches(self) -> int:
         """Returns the number of matching elements for the alignment."""
