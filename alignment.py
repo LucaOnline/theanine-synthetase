@@ -66,7 +66,7 @@ class AlignmentResult:
 
     def clustered_mismatch_variance(self, cluster_size: int = 6) -> float:
         """
-        Returns the variance within the mismatch clusters of size
+        Returns the variance between the mismatch clusters of size
         `cluster_size`. The raw cluster mismatches can be retrieved
         with the `clustered_mismatches` method.
         """

@@ -32,7 +32,7 @@ if __name__ == "__main__":
     alignment_result = align_sequences(test_seq, cstsi_mrna, nucleotides=True)
 
     print(
-        "Variance within clusters: "
+        "Variance between clusters: "
         + str(alignment_result.clustered_mismatch_variance(cluster_size=15))
     )
 
@@ -51,13 +51,29 @@ if __name__ == "__main__":
         )
 
     # Test random sequence
-    rand_seq = test_seq.split()
-    shuffle(rand_seq)
-    rand_seq = "".join(rand_seq)
+    rand_seq_list = list(test_seq)
+    shuffle(rand_seq_list)
+    rand_seq = "".join(rand_seq_list)
 
     rand_alignment_result = align_sequences(rand_seq, cstsi_mrna, nucleotides=True)
 
     print(
-        "Variance within clusters (shuffled sequence): "
-        + str(alignment_result.clustered_mismatch_variance(cluster_size=15))
+        "Variance between clusters (shuffled sequence): "
+        + str(rand_alignment_result.clustered_mismatch_variance(cluster_size=15))
     )
+
+    (
+        rand_largest_mismatch_pos,
+        rand_largest_mismatch,
+    ) = rand_alignment_result.largest_mismatch()
+    rand_percent_similarity = 1 - (
+        rand_alignment_result.hamming_distance()
+        / rand_alignment_result.get_alignment_length()
+    )
+
+    with open(get_output("shuffled.aln.txt"), "w+") as f:
+        f.write(rand_alignment_result.format_result(line_length=100))
+    with open(get_output("shuffled.meta.txt"), "w+") as f:
+        f.write(
+            f"Percent similarity: {rand_percent_similarity}\nLargest mismatch location: {rand_largest_mismatch_pos}\nLargest mismatch size: {rand_largest_mismatch}bp\n"
+        )
