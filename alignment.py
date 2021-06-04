@@ -1,4 +1,4 @@
-from typing import Tuple, Literal
+from typing import Tuple, Literal, List
 
 import numpy as np
 
@@ -44,6 +44,23 @@ class AlignmentResult:
                 for i in range(len(self.alignment_1))
             ]
         )
+
+    def clustered_mismatches(self, cluster_size: int) -> List[int]:
+        """
+        Breaks the alignment into clusters of `cluster_size` and
+        returns the number of mismatches in each cluster. If the
+        alignment length modulo `cluster_size` is not zero, this
+        leaves the last cluster with the remainder of the
+        mismatches.
+        """
+        if cluster_size < 1:
+            raise ValueError("cluster size must be greater than or equal to 1")
+
+        match_string = self.get_match_string()
+        return [
+            match_string[i * cluster_size : i * cluster_size + cluster_size].count(" ")
+            for i in range(0, len(match_string) // cluster_size)
+        ]
 
     def matches(self) -> int:
         """Returns the number of matching elements for the alignment."""
