@@ -21,6 +21,11 @@ CHEMICAL_CLASS = {
 
 
 class AlignmentResult:
+    """
+    AlignmentResult represents the result of performing an alignment on
+    two sequences.
+    """
+
     def __init__(self, alignment_1: str, alignment_2: str):
         if len(alignment_1) != len(alignment_2):
             raise ValueError("input strings have differing lengths")
