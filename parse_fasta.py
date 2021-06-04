@@ -5,6 +5,9 @@ def parse_fasta(filename: str) -> Iterator[Tuple[str, str]]:
     with open(filename, "r") as f:
         data = f.read()
 
+    if data[0] != ">":
+        raise ValueError("input file is not a FASTA file")
+
     currentSeq = []
     currentKey = ""
     for line in data.splitlines():
