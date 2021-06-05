@@ -94,7 +94,10 @@ if __name__ == "__main__":
         observed_effect_size=alignment_result.clustered_mismatch_variance(
             cluster_count=cluster_count
         ),
-        n_trials=10,
+        n_trials=1000,
     )
+
+    with open(get_output("monte_carlo.txt"), "w+") as f:
+        f.write(simulation_result.format_result())
 
     simulation_result.examine()

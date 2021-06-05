@@ -20,9 +20,11 @@ class MonteCarloSimulationResult:
 
     def examine(self):
         """Prints information about the simulation to the console."""
-        print(
-            f"Monte-Carlo simulation summary:\nTrials: {self.n_trials}\nSuccesses: {self.n_successes}\np-value: {self.p_value}"
-        )
+        print(self.format_result())
+
+    def format_result(self):
+        """Formats the results of the simulation for external use."""
+        return f"Monte-Carlo simulation summary:\nTrials: {self.n_trials}\nSuccesses: {self.n_successes}\np-value: {self.p_value}"
 
     def get_p_value(self):
         """Returns the estimated p-value of the simmulation."""
