@@ -10,12 +10,31 @@ class MonteCarloSimulationResult:
     MonteCarloSimulationResult represents the result of a Monte-Carlo simulation.
     """
 
-    def __init__(self, p_value: float):
+    def __init__(self, p_value: float, n_trials: int, n_successes: int):
+        """
+        Produces a new MonteCarloSimulationResult representing the result of a Monte-Carlo simulation.
+        """
         self.p_value = p_value
+        self.n_trials = n_trials
+        self.n_successes = n_successes
+
+    def examine(self):
+        """Prints information about the simulation to the console."""
+        print(
+            f"Monte-Carlo simulation summary:\nTrials: {self.n_trials}\nSuccesses: {self.n_successes}\np-value: {self.p_value}"
+        )
 
     def get_p_value(self):
         """Returns the estimated p-value of the simmulation."""
         return self.p_value
+
+    def get_trial_count(self):
+        """Returns the number of trials in the simmulation."""
+        return self.n_trials
+
+    def get_success_count(self):
+        """Returns the number of successes in the simmulation."""
+        return self.n_successes
 
 
 def monte_carlo(
@@ -62,13 +81,12 @@ def monte_carlo(
 
         return next_result
 
-    successes = sum(
-        [1 if get_next_result(trial + 1) else 0 for trial in range(n_trials)]
-    )
+    trials = [get_next_result(trial + 1) for trial in range(n_trials)]
+    successes = sum(trials)  # Yes, this is summing booleans
 
     p_value = successes / n_trials
 
     if verbose:
         print("Monte-Carlo simulation completed. Final p-value: %.6f" % p_value)
 
-    return MonteCarloSimulationResult(p_value)
+    return MonteCarloSimulationResult(p_value, n_trials, successes)

@@ -95,5 +95,6 @@ if __name__ == "__main__":
             cluster_count=cluster_count
         ),
         n_trials=10,
-        verbose=True,
     )
+
+    simulation_result.examine()
