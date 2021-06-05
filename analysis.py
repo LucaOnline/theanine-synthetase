@@ -5,6 +5,7 @@ import json
 from dnds import dnds
 import matplotlib.pyplot as plt
 from matplotlib.ticker import MaxNLocator
+import numpy as np
 import pandas as pd
 import seaborn as sns
 
@@ -31,15 +32,15 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
         )
 
         sns.relplot(data=df[f"{clusters}_clusters"], kind="line")
+
         plt.title(f"Mismatches per alignment cluster ({clusters} clusters)")
         plt.xlabel("Cluster #")
         plt.ylabel("Mismatches")
 
         fig = plt.gcf()
-        fig.set_size_inches(6, 8)
+        fig.set_size_inches(7, 8)
 
-        axes = plt.gca()
-        axes.xaxis.set_major_locator(MaxNLocator(integer=True))
+        plt.xticks(np.arange(clusters), np.arange(1, clusters + 1))
 
         plt.savefig(get_output(f"{seq_filename}_clustered_mismatches_{clusters}.png"))
 
