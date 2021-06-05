@@ -1,5 +1,7 @@
 # theanine-synthetase
-Repository for CSS 383 Project 1
+[![Documentation](https://img.shields.io/badge/docs-pdoc3-yellow)](https://lucaonline.github.io/theanine-synthetase/)
+
+Repository for CSS 383 Project 1.
 
 ## Usage
 Please refer to the [Makefile](./Makefile) for script usage.
