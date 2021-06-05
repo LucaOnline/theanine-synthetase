@@ -22,7 +22,7 @@ TYR = "Y"
 VAL = "V"
 
 # Almost all of the mRNA transcripts on NCBI seem to be cDNA,
-# so I'm keeping it that way to be faithful to the original data
+# so I'm keeping it that way to be faithful to the raw data
 
 STOP_CODONS = ["TAA", "TAG", "TGA"]
 
@@ -89,3 +89,11 @@ AMINO_ACID_TRANSLATIONS = {
     "GGA": GLY,
     "GGG": GLY,
 }
+
+
+def changes_amino(codon1: str, codon2: str) -> bool:
+    """
+    Returns True if codon2's differences from codon1 would change the
+    amino acid that codon1 encodes.
+    """
+    return AMINO_ACID_TRANSLATIONS[codon1] != AMINO_ACID_TRANSLATIONS[codon2]
