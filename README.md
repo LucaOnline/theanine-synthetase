@@ -1,4 +1,4 @@
-# CSS383-Project1
+# theanine-synthetase
 Repository for CSS 383 Project 1
 
 ## Usage
@@ -15,3 +15,5 @@ the mutations between CsTSI and CsGSI occurred by random chance.
 
 ## Contributing
 This project uses [Black](https://black.readthedocs.io/en/stable/) for Python code formatting.
+
+[pdoc3](https://pdoc3.github.io/pdoc/) is used for documentation generation.

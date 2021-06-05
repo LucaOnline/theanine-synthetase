@@ -9,8 +9,11 @@ ifeq (, $(shell which python))
 endif
 
 help: ## Show this help
-	@echo Dependencies: $(PYTHON_EXEC)
+	@echo Dependencies: $(PYTHON_EXEC) [pdoc3]
 	@egrep -h '\s##\s' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+docs: ## Generates the documentation files (requires pdoc3)
+	pdoc3 --html --output-dir docs --force .
 
 install: ## Install project dependencies
 	$(PYTHON_EXEC) -m pip install -r requirements.txt
