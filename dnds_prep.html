@@ -4,8 +4,8 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, minimum-scale=1" />
 <meta name="generator" content="pdoc 0.9.2" />
-<title>theanine-synthetase.aminos API documentation</title>
-<meta name="description" content="The `aminos` modules contains utilities for interpreting nucleotide sequences in terms of amino acids." />
+<title>theanine-synthetase.dnds_prep API documentation</title>
+<meta name="description" content="The `dnds_prep` module exposes methods for preparing an alignment for dN/dS (Ka/Ks) analysis." />
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/sanitize.min.css" integrity="sha256-PK9q560IAAa6WVRRh76LtCaI8pjTJ2z11v0miyNNjrs=" crossorigin>
 <link rel="preload stylesheet" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/10up-sanitize.css/11.0.1/typography.min.css" integrity="sha256-7l/o7C8jubJiy74VsKTidCy1yBkRtiUGbVkYBylBqUg=" crossorigin>
 <link rel="stylesheet preload" as="style" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/10.1.1/styles/github.min.css" crossorigin>
@@ -19,116 +19,31 @@
 <main>
 <article id="content">
 <header>
-<h1 class="title">Module <code>theanine-synthetase.aminos</code></h1>
+<h1 class="title">Module <code>theanine-synthetase.dnds_prep</code></h1>
 </header>
 <section id="section-intro">
-<p>The <code>aminos</code> modules contains utilities for interpreting nucleotide sequences in terms of amino acids.</p>
+<p>The <code>dnds_prep</code> module exposes methods for preparing an alignment for dN/dS (Ka/Ks) analysis.</p>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">&#34;&#34;&#34;The `aminos` modules contains utilities for interpreting nucleotide sequences in terms of amino acids.&#34;&#34;&#34;
+<pre><code class="python">&#34;&#34;&#34;
+The `dnds_prep` module exposes methods for preparing an alignment for dN/dS (Ka/Ks) analysis.
+&#34;&#34;&#34;
 
-from typing import Iterator
+from typing import Tuple
 
-
-ALA = &#34;A&#34;
-ARG = &#34;R&#34;
-ASN = &#34;N&#34;
-ASP = &#34;D&#34;
-CYS = &#34;C&#34;
-GLU = &#34;E&#34;
-GLN = &#34;Q&#34;
-GLY = &#34;G&#34;
-HIS = &#34;H&#34;
-ILE = &#34;I&#34;
-LEU = &#34;L&#34;
-LYS = &#34;K&#34;
-MET = &#34;M&#34;
-PHE = &#34;F&#34;
-PRO = &#34;P&#34;
-SER = &#34;S&#34;
-THR = &#34;T&#34;
-TRP = &#34;W&#34;
-TYR = &#34;Y&#34;
-VAL = &#34;V&#34;
-
-# Almost all of the mRNA transcripts on NCBI seem to be cDNA,
-# so I&#39;m keeping it that way to be faithful to the raw data
-
-STOP_CODONS = [&#34;TAA&#34;, &#34;TAG&#34;, &#34;TGA&#34;]
-
-AMINO_ACID_TRANSLATIONS = {
-    &#34;TTT&#34;: PHE,
-    &#34;TTC&#34;: PHE,
-    &#34;TTA&#34;: LEU,
-    &#34;TTG&#34;: LEU,
-    &#34;TCT&#34;: SER,
-    &#34;TCC&#34;: SER,
-    &#34;TCA&#34;: SER,
-    &#34;TCG&#34;: SER,
-    &#34;TAT&#34;: TYR,
-    &#34;TAC&#34;: TYR,
-    &#34;TGT&#34;: CYS,
-    &#34;TGC&#34;: CYS,
-    &#34;TGG&#34;: TRP,
-    &#34;CTT&#34;: LEU,
-    &#34;CTC&#34;: LEU,
-    &#34;CTA&#34;: LEU,
-    &#34;CTG&#34;: LEU,
-    &#34;CCT&#34;: PRO,
-    &#34;CCC&#34;: PRO,
-    &#34;CCA&#34;: PRO,
-    &#34;CCG&#34;: PRO,
-    &#34;CAT&#34;: HIS,
-    &#34;CAC&#34;: HIS,
-    &#34;CAA&#34;: GLN,
-    &#34;CAG&#34;: GLN,
-    &#34;CGT&#34;: ARG,
-    &#34;CGC&#34;: ARG,
-    &#34;CGA&#34;: ARG,
-    &#34;CGG&#34;: ARG,
-    &#34;ATT&#34;: ILE,
-    &#34;ATC&#34;: ILE,
-    &#34;ATA&#34;: ILE,
-    &#34;ATG&#34;: MET,
-    &#34;ACT&#34;: THR,
-    &#34;ACC&#34;: THR,
-    &#34;ACA&#34;: THR,
-    &#34;ACG&#34;: THR,
-    &#34;AAT&#34;: ASN,
-    &#34;AAC&#34;: ASN,
-    &#34;AAA&#34;: LYS,
-    &#34;AAG&#34;: LYS,
-    &#34;AGT&#34;: SER,
-    &#34;AGC&#34;: SER,
-    &#34;AGA&#34;: ARG,
-    &#34;AGG&#34;: ARG,
-    &#34;GTT&#34;: VAL,
-    &#34;GTC&#34;: VAL,
-    &#34;GTA&#34;: VAL,
-    &#34;GTG&#34;: VAL,
-    &#34;GCT&#34;: ALA,
-    &#34;GCC&#34;: ALA,
-    &#34;GCA&#34;: ALA,
-    &#34;GCG&#34;: ALA,
-    &#34;GAT&#34;: ASP,
-    &#34;GAC&#34;: ASP,
-    &#34;GAA&#34;: GLU,
-    &#34;GAG&#34;: GLU,
-    &#34;GGT&#34;: GLY,
-    &#34;GGC&#34;: GLY,
-    &#34;GGA&#34;: GLY,
-    &#34;GGG&#34;: GLY,
-}
+from alignment import AlignmentResult
 
 
-def changes_amino(codon1: str, codon2: str) -&gt; bool:
+def trim_indels(alignment: AlignmentResult) -&gt; Tuple[str, str]:
     &#34;&#34;&#34;
-    Returns True if codon2&#39;s differences from codon1 would change the
-    amino acid that codon1 encodes.
+    Trims indels from the provided alignment and returns a
+    tuple (alignment_1, alignment_2).
     &#34;&#34;&#34;
-    return AMINO_ACID_TRANSLATIONS[codon1] != AMINO_ACID_TRANSLATIONS[codon2]</code></pre>
+    alignment_1 = alignment.get_alignment_1()
+    alignment_2 = alignment.get_alignment_2()
+    return alignment_1.replace(&#34;-&#34;, &#34;&#34;), alignment_2.replace(&#34;-&#34;, &#34;&#34;)</code></pre>
 </details>
 </section>
 <section>
@@ -138,22 +53,24 @@ def changes_amino(codon1: str, codon2: str) -&gt; bool:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="theanine-synthetase.aminos.changes_amino"><code class="name flex">
-<span>def <span class="ident">changes_amino</span></span>(<span>codon1: str, codon2: str) ‑> bool</span>
+<dt id="theanine-synthetase.dnds_prep.trim_indels"><code class="name flex">
+<span>def <span class="ident">trim_indels</span></span>(<span>alignment: alignment.AlignmentResult) ‑> Tuple[str, str]</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Returns True if codon2's differences from codon1 would change the
-amino acid that codon1 encodes.</p></div>
+<div class="desc"><p>Trims indels from the provided alignment and returns a
+tuple (alignment_1, alignment_2).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def changes_amino(codon1: str, codon2: str) -&gt; bool:
+<pre><code class="python">def trim_indels(alignment: AlignmentResult) -&gt; Tuple[str, str]:
     &#34;&#34;&#34;
-    Returns True if codon2&#39;s differences from codon1 would change the
-    amino acid that codon1 encodes.
+    Trims indels from the provided alignment and returns a
+    tuple (alignment_1, alignment_2).
     &#34;&#34;&#34;
-    return AMINO_ACID_TRANSLATIONS[codon1] != AMINO_ACID_TRANSLATIONS[codon2]</code></pre>
+    alignment_1 = alignment.get_alignment_1()
+    alignment_2 = alignment.get_alignment_2()
+    return alignment_1.replace(&#34;-&#34;, &#34;&#34;), alignment_2.replace(&#34;-&#34;, &#34;&#34;)</code></pre>
 </details>
 </dd>
 </dl>
@@ -174,7 +91,7 @@ amino acid that codon1 encodes.</p></div>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="theanine-synthetase.aminos.changes_amino" href="#theanine-synthetase.aminos.changes_amino">changes_amino</a></code></li>
+<li><code><a title="theanine-synthetase.dnds_prep.trim_indels" href="#theanine-synthetase.dnds_prep.trim_indels">trim_indels</a></code></li>
 </ul>
 </li>
 </ul>

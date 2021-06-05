@@ -31,22 +31,29 @@
 
 import json
 
+from dnds import dnds
+
 from alignment import align_sequences
-from data_index import CSTSI, CSGSI
+from data_index import CSTSI, CSGSI, CSTSI_PROTEIN, CSGSI_PROTEIN
 from dir_utils import get_data, make_output_dir, get_output
+from dnds_prep import trim_indels
 from options import CLUSTER_COUNT
 from parse_fasta import parse_fasta
 
 
-if __name__ == &#34;__main__&#34;:
-    # Read CsTSI sequence
-    cstsi_mrna = list(parse_fasta(get_data(CSTSI)))[0][1]
+def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
+    &#34;&#34;&#34;
+    Performs an alignment-based analysis on the sequences in the provided FASTA files.
+    `nucleotides` should be `True` if the two filenames refer to nucleotide sequences.
+    &#34;&#34;&#34;
+    # Read first sequence
+    seq_name, seq1 = list(parse_fasta(get_data(seq1_filename)))[0]
 
-    # Analyze CsGSI sequence
-    print(&#34;Analyzing %s...&#34; % CSGSI)
+    # Analyze second sequence
+    print(&#34;Analyzing %s...&#34; % seq2_filename)
 
-    csgsi_seq = list(parse_fasta(get_data(CSGSI)))[0][1]
-    alignment_result = align_sequences(csgsi_seq, cstsi_mrna, nucleotides=True)
+    seq2 = list(parse_fasta(get_data(seq2_filename)))[0][1]
+    alignment_result = align_sequences(seq2, seq1, nucleotides=nucleotides)
 
     largest_mismatch_pos, largest_mismatch = alignment_result.largest_mismatch()
     percent_similarity = 1 - (
@@ -60,33 +67,48 @@ if __name__ == &#34;__main__&#34;:
         cluster_count=CLUSTER_COUNT
     )
 
+    if nucleotides:
+        trimmed_alignment_1, trimmed_alignment_2 = trim_indels(alignment_result)
+        dnds_ratio = dnds(trimmed_alignment_1, trimmed_alignment_2)
+
     # Output Supplementary Data 4
     make_output_dir()
-    with open(get_output(CSGSI + &#34;.aln.txt&#34;), &#34;w+&#34;) as f:
+    with open(get_output(seq2_filename + &#34;.aln.txt&#34;), &#34;w+&#34;) as f:
         f.write(alignment_result.format_result(line_length=100))
 
-    with open(get_output(CSGSI + &#34;.meta.txt&#34;), &#34;w+&#34;) as f:
+    with open(get_output(seq2_filename + &#34;.meta.txt&#34;), &#34;w+&#34;) as f:
         f.write(
             &#34;Formatted metadata -- not for programmatic use.\n\n&#34;
-            + &#34;Information for alignment with CsTSI:\n\n&#34;
+            + f&#34;Information for alignment with {seq_name}:\n\n&#34;
             + f&#34;Percent similarity: {percent_similarity}\n&#34;
             + f&#34;Largest mismatch location: {largest_mismatch_pos}\n&#34;
             + f&#34;Largest mismatch size: {largest_mismatch}bp\n&#34;
             + f&#34;Variance between clusters ({CLUSTER_COUNT} clusters): {clustered_mismatch_variance}\n&#34;
             + f&#34;Clustered mismatches: {clustered_mismatches}\n&#34;
+            + (f&#34;dN/dS ratio: {dnds_ratio}\n&#34; if nucleotides else &#34;&#34;)
         )
 
-    with open(get_output(CSGSI + &#34;.meta.json&#34;), &#34;w+&#34;) as f:
+    with open(get_output(seq2_filename + &#34;.meta.json&#34;), &#34;w+&#34;) as f:
+        json_output = {
+            &#34;percent_similarity&#34;: percent_similarity,
+            &#34;largest_mismatch_pos&#34;: largest_mismatch_pos,
+            &#34;largest_mismatch&#34;: largest_mismatch,
+            &#34;clustered_mismatch_variance&#34;: clustered_mismatch_variance,
+            &#34;clustered_mismatches&#34;: clustered_mismatches,
+        }
+
+        if nucleotides:
+            json_output[&#34;dnds_ratio&#34;] = dnds_ratio
+
         json.dump(
-            {
-                &#34;percent_similarity&#34;: percent_similarity,
-                &#34;largest_mismatch_pos&#34;: largest_mismatch_pos,
-                &#34;largest_mismatch&#34;: largest_mismatch,
-                &#34;clustered_mismatch_variance&#34;: clustered_mismatch_variance,
-                &#34;clustered_mismatches&#34;: clustered_mismatches,
-            },
+            json_output,
             f,
-        )</code></pre>
+        )
+
+
+if __name__ == &#34;__main__&#34;:
+    analyze(CSTSI, CSGSI, nucleotides=True)
+    analyze(CSTSI_PROTEIN, CSGSI_PROTEIN)</code></pre>
 </details>
 </section>
 <section>
@@ -94,6 +116,84 @@ if __name__ == &#34;__main__&#34;:
 <section>
 </section>
 <section>
+<h2 class="section-title" id="header-functions">Functions</h2>
+<dl>
+<dt id="theanine-synthetase.analysis.analyze"><code class="name flex">
+<span>def <span class="ident">analyze</span></span>(<span>seq1_filename: str, seq2_filename: str, nucleotides: bool = False)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Performs an alignment-based analysis on the sequences in the provided FASTA files.
+<code>nucleotides</code> should be <code>True</code> if the two filenames refer to nucleotide sequences.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
+    &#34;&#34;&#34;
+    Performs an alignment-based analysis on the sequences in the provided FASTA files.
+    `nucleotides` should be `True` if the two filenames refer to nucleotide sequences.
+    &#34;&#34;&#34;
+    # Read first sequence
+    seq_name, seq1 = list(parse_fasta(get_data(seq1_filename)))[0]
+
+    # Analyze second sequence
+    print(&#34;Analyzing %s...&#34; % seq2_filename)
+
+    seq2 = list(parse_fasta(get_data(seq2_filename)))[0][1]
+    alignment_result = align_sequences(seq2, seq1, nucleotides=nucleotides)
+
+    largest_mismatch_pos, largest_mismatch = alignment_result.largest_mismatch()
+    percent_similarity = 1 - (
+        alignment_result.hamming_distance() / alignment_result.get_alignment_length()
+    )
+
+    clustered_mismatches = alignment_result.clustered_mismatches(
+        cluster_count=CLUSTER_COUNT
+    )
+    clustered_mismatch_variance = alignment_result.clustered_mismatch_variance(
+        cluster_count=CLUSTER_COUNT
+    )
+
+    if nucleotides:
+        trimmed_alignment_1, trimmed_alignment_2 = trim_indels(alignment_result)
+        dnds_ratio = dnds(trimmed_alignment_1, trimmed_alignment_2)
+
+    # Output Supplementary Data 4
+    make_output_dir()
+    with open(get_output(seq2_filename + &#34;.aln.txt&#34;), &#34;w+&#34;) as f:
+        f.write(alignment_result.format_result(line_length=100))
+
+    with open(get_output(seq2_filename + &#34;.meta.txt&#34;), &#34;w+&#34;) as f:
+        f.write(
+            &#34;Formatted metadata -- not for programmatic use.\n\n&#34;
+            + f&#34;Information for alignment with {seq_name}:\n\n&#34;
+            + f&#34;Percent similarity: {percent_similarity}\n&#34;
+            + f&#34;Largest mismatch location: {largest_mismatch_pos}\n&#34;
+            + f&#34;Largest mismatch size: {largest_mismatch}bp\n&#34;
+            + f&#34;Variance between clusters ({CLUSTER_COUNT} clusters): {clustered_mismatch_variance}\n&#34;
+            + f&#34;Clustered mismatches: {clustered_mismatches}\n&#34;
+            + (f&#34;dN/dS ratio: {dnds_ratio}\n&#34; if nucleotides else &#34;&#34;)
+        )
+
+    with open(get_output(seq2_filename + &#34;.meta.json&#34;), &#34;w+&#34;) as f:
+        json_output = {
+            &#34;percent_similarity&#34;: percent_similarity,
+            &#34;largest_mismatch_pos&#34;: largest_mismatch_pos,
+            &#34;largest_mismatch&#34;: largest_mismatch,
+            &#34;clustered_mismatch_variance&#34;: clustered_mismatch_variance,
+            &#34;clustered_mismatches&#34;: clustered_mismatches,
+        }
+
+        if nucleotides:
+            json_output[&#34;dnds_ratio&#34;] = dnds_ratio
+
+        json.dump(
+            json_output,
+            f,
+        )</code></pre>
+</details>
+</dd>
+</dl>
 </section>
 <section>
 </section>
@@ -107,6 +207,11 @@ if __name__ == &#34;__main__&#34;:
 <li><h3>Super-module</h3>
 <ul>
 <li><code><a title="theanine-synthetase" href="index.html">theanine-synthetase</a></code></li>
+</ul>
+</li>
+<li><h3><a href="#header-functions">Functions</a></h3>
+<ul class="">
+<li><code><a title="theanine-synthetase.analysis.analyze" href="#theanine-synthetase.analysis.analyze">analyze</a></code></li>
 </ul>
 </li>
 </ul>
