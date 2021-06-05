@@ -2,22 +2,29 @@
 
 import json
 
+from dnds import dnds
+
 from alignment import align_sequences
-from data_index import CSTSI, CSGSI
+from data_index import CSTSI, CSGSI, CSTSI_PROTEIN, CSGSI_PROTEIN
 from dir_utils import get_data, make_output_dir, get_output
+from dnds_prep import trim_indels
 from options import CLUSTER_COUNT
 from parse_fasta import parse_fasta
 
 
-if __name__ == "__main__":
-    # Read CsTSI sequence
-    cstsi_mrna = list(parse_fasta(get_data(CSTSI)))[0][1]
+def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
+    """
+    Performs an alignment-based analysis on the sequences in the provided FASTA files.
+    `nucleotides` should be `True` if the two filenames refer to nucleotide sequences.
+    """
+    # Read first sequence
+    seq_name, seq1 = list(parse_fasta(get_data(seq1_filename)))[0]
 
-    # Analyze CsGSI sequence
-    print("Analyzing %s..." % CSGSI)
+    # Analyze second sequence
+    print("Analyzing %s..." % seq2_filename)
 
-    csgsi_seq = list(parse_fasta(get_data(CSGSI)))[0][1]
-    alignment_result = align_sequences(csgsi_seq, cstsi_mrna, nucleotides=True)
+    seq2 = list(parse_fasta(get_data(seq2_filename)))[0][1]
+    alignment_result = align_sequences(seq2, seq1, nucleotides=nucleotides)
 
     largest_mismatch_pos, largest_mismatch = alignment_result.largest_mismatch()
     percent_similarity = 1 - (
@@ -31,30 +38,45 @@ if __name__ == "__main__":
         cluster_count=CLUSTER_COUNT
     )
 
+    if nucleotides:
+        trimmed_alignment_1, trimmed_alignment_2 = trim_indels(alignment_result)
+        dnds_ratio = dnds(trimmed_alignment_1, trimmed_alignment_2)
+
     # Output Supplementary Data 4
     make_output_dir()
-    with open(get_output(CSGSI + ".aln.txt"), "w+") as f:
+    with open(get_output(seq2_filename + ".aln.txt"), "w+") as f:
         f.write(alignment_result.format_result(line_length=100))
 
-    with open(get_output(CSGSI + ".meta.txt"), "w+") as f:
+    with open(get_output(seq2_filename + ".meta.txt"), "w+") as f:
         f.write(
             "Formatted metadata -- not for programmatic use.\n\n"
-            + "Information for alignment with CsTSI:\n\n"
+            + f"Information for alignment with {seq_name}:\n\n"
             + f"Percent similarity: {percent_similarity}\n"
             + f"Largest mismatch location: {largest_mismatch_pos}\n"
             + f"Largest mismatch size: {largest_mismatch}bp\n"
             + f"Variance between clusters ({CLUSTER_COUNT} clusters): {clustered_mismatch_variance}\n"
             + f"Clustered mismatches: {clustered_mismatches}\n"
+            + (f"dN/dS ratio: {dnds_ratio}\n" if nucleotides else "")
         )
 
-    with open(get_output(CSGSI + ".meta.json"), "w+") as f:
+    with open(get_output(seq2_filename + ".meta.json"), "w+") as f:
+        json_output = {
+            "percent_similarity": percent_similarity,
+            "largest_mismatch_pos": largest_mismatch_pos,
+            "largest_mismatch": largest_mismatch,
+            "clustered_mismatch_variance": clustered_mismatch_variance,
+            "clustered_mismatches": clustered_mismatches,
+        }
+
+        if nucleotides:
+            json_output["dnds_ratio"] = dnds_ratio
+
         json.dump(
-            {
-                "percent_similarity": percent_similarity,
-                "largest_mismatch_pos": largest_mismatch_pos,
-                "largest_mismatch": largest_mismatch,
-                "clustered_mismatch_variance": clustered_mismatch_variance,
-                "clustered_mismatches": clustered_mismatches,
-            },
+            json_output,
             f,
         )
+
+
+if __name__ == "__main__":
+    analyze(CSTSI, CSGSI, nucleotides=True)
+    analyze(CSTSI_PROTEIN, CSGSI_PROTEIN)

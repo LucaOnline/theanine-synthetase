@@ -10,6 +10,9 @@ ZMGS = "zmgs.fas"
 FNGS = "fngs.fas"
 NTGS = "ntgs.fas"
 
+CSTSI_PROTEIN = "cstsi.protein.fas"
+CSGSI_PROTEIN = "csgsi.protein.fas"
+
 DATA_URLS = {
     CSTSI: {
         "url": "https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?tool=portal&save=file&log$=seqview&db=nuccore&report=fasta&id=1573295573&extrafeat=null&conwithfeat=on&hide-cdd=on",
@@ -37,5 +40,11 @@ DATA_URLS = {
     },
     NTGS: {
         "url": "https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?tool=portal&save=file&log$=seqview&db=nuccore&report=fasta&id=1419093&extrafeat=null&conwithfeat=on&hide-cdd=on",
+    },
+    CSTSI_PROTEIN: {
+        "url": "https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?tool=portal&save=file&log$=seqview&db=nuccore&report=fasta_cds_aa&id=1573295573&extrafeat=null&conwithfeat=on&hide-cdd=on",
+    },
+    CSGSI_PROTEIN: {
+        "url": "https://www.ncbi.nlm.nih.gov/sviewer/viewer.cgi?tool=portal&save=file&log$=seqview&db=nuccore&report=fasta_cds_aa&id=161789847&extrafeat=null&conwithfeat=on&hide-cdd=on",
     },
 }
