@@ -66,10 +66,15 @@ def monte_carlo(
     Runs a Monte-Carlo simulation. Returns an object representing the result of the simulation,
     which will contain the final p-value.
 
+
     `simulation_fn`: A function that runs a single trial of the simulation.
+
     `effect_size_fn`: A function that calculates an effect size from the return value of the simulation function.
+
     `observed_effect_size`: The observed effect size that is being tested.
+
     `n_trials`: The number of trials to run. More trials will more precisely estimate the p-value.
+
     `verbose`: Whether or not to perform logging to the console while the simulation is running.
     """
 
