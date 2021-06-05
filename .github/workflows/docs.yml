@@ -10,11 +10,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v2
-      - name: Generate documentation
-        run: |
-          pip install -r requirements.txt
-          pip install pdoc3
-          make docs
       - name: Deploy documentation
         uses: JacksonMaxfield/github-pages-deploy-action-python@master
         env:
@@ -22,3 +17,4 @@ jobs:
           BASE_BRANCH: main
           BRANCH: gh-pages
           FOLDER: docs
+          BUILD_SCRIPT: pip install -r requirements.txt && pip install pdoc3 && make docs
