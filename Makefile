@@ -14,6 +14,8 @@ help: ## Show this help
 
 docs: ## Generates the documentation files (requires pdoc3)
 	pdoc3 --html --output-dir docs --force .
+	cp docs/theanine-synthetase/* docs/ -R
+	rm -rf docs/theanine-synthetase
 
 install: ## Install project dependencies
 	$(PYTHON_EXEC) -m pip install -r requirements.txt
