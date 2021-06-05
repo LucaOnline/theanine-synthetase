@@ -1,0 +1,20 @@
+name: Regenerate documentation
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch:
+jobs:
+  docs:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Generate and deploy documentation
+        uses: JacksonMaxfield/github-pages-deploy-action-python@master
+        env:
+          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
+          BASE_BRANCH: main
+          BRANCH: gh-pages
+          FOLDER: docs
+          BUILD_SCRIPT: pip install pdoc3 && make docs
