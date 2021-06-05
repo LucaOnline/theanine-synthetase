@@ -37,7 +37,7 @@ from alignment import align_sequences
 from data_index import CSTSI, CSGSI, CSTSI_PROTEIN, CSGSI_PROTEIN
 from dir_utils import get_data, make_output_dir, get_output
 from dnds_prep import trim_indels
-from options import CLUSTER_COUNT
+from options import CLUSTER_COUNTS
 from parse_fasta import parse_fasta
 
 
@@ -60,50 +60,51 @@ def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
         alignment_result.hamming_distance() / alignment_result.get_alignment_length()
     )
 
-    clustered_mismatches = alignment_result.clustered_mismatches(
-        cluster_count=CLUSTER_COUNT
-    )
-    clustered_mismatch_variance = alignment_result.clustered_mismatch_variance(
-        cluster_count=CLUSTER_COUNT
-    )
-
-    if nucleotides:
-        trimmed_alignment_1, trimmed_alignment_2 = trim_indels(alignment_result)
-        dnds_ratio = dnds(trimmed_alignment_1, trimmed_alignment_2)
-
-    # Output Supplementary Data 4
-    make_output_dir()
-    with open(get_output(seq2_filename + &#34;.aln.txt&#34;), &#34;w+&#34;) as f:
-        f.write(alignment_result.format_result(line_length=100))
-
-    with open(get_output(seq2_filename + &#34;.meta.txt&#34;), &#34;w+&#34;) as f:
-        f.write(
-            &#34;Formatted metadata -- not for programmatic use.\n\n&#34;
-            + f&#34;Information for alignment with {seq_name}:\n\n&#34;
-            + f&#34;Percent similarity: {percent_similarity}\n&#34;
-            + f&#34;Largest mismatch location: {largest_mismatch_pos}\n&#34;
-            + f&#34;Largest mismatch size: {largest_mismatch}bp\n&#34;
-            + f&#34;Variance between clusters ({CLUSTER_COUNT} clusters): {clustered_mismatch_variance}\n&#34;
-            + f&#34;Clustered mismatches: {clustered_mismatches}\n&#34;
-            + (f&#34;dN/dS ratio: {dnds_ratio}\n&#34; if nucleotides else &#34;&#34;)
+    for clusters in CLUSTER_COUNTS:
+        clustered_mismatches = alignment_result.clustered_mismatches(
+            cluster_count=clusters
         )
-
-    with open(get_output(seq2_filename + &#34;.meta.json&#34;), &#34;w+&#34;) as f:
-        json_output = {
-            &#34;percent_similarity&#34;: percent_similarity,
-            &#34;largest_mismatch_pos&#34;: largest_mismatch_pos,
-            &#34;largest_mismatch&#34;: largest_mismatch,
-            &#34;clustered_mismatch_variance&#34;: clustered_mismatch_variance,
-            &#34;clustered_mismatches&#34;: clustered_mismatches,
-        }
+        clustered_mismatch_variance = alignment_result.clustered_mismatch_variance(
+            cluster_count=clusters
+        )
 
         if nucleotides:
-            json_output[&#34;dnds_ratio&#34;] = dnds_ratio
+            trimmed_alignment_1, trimmed_alignment_2 = trim_indels(alignment_result)
+            dnds_ratio = dnds(trimmed_alignment_1, trimmed_alignment_2)
 
-        json.dump(
-            json_output,
-            f,
-        )
+        # Output Supplementary Data 4
+        make_output_dir()
+        with open(get_output(f&#34;{seq2_filename}_{clusters}.aln.txt&#34;), &#34;w+&#34;) as f:
+            f.write(alignment_result.format_result(line_length=100))
+
+        with open(get_output(f&#34;{seq2_filename}_{clusters}.meta.txt&#34;), &#34;w+&#34;) as f:
+            f.write(
+                &#34;Formatted metadata -- not for programmatic use.\n\n&#34;
+                + f&#34;Information for alignment with {seq_name}:\n\n&#34;
+                + f&#34;Percent similarity: {percent_similarity}\n&#34;
+                + f&#34;Largest mismatch location: {largest_mismatch_pos}\n&#34;
+                + f&#34;Largest mismatch size: {largest_mismatch}bp\n&#34;
+                + f&#34;Variance between clusters ({clusters} clusters): {clustered_mismatch_variance}\n&#34;
+                + f&#34;Clustered mismatches: {clustered_mismatches}\n&#34;
+                + (f&#34;dN/dS ratio: {dnds_ratio}\n&#34; if nucleotides else &#34;&#34;)
+            )
+
+        with open(get_output(f&#34;{seq2_filename}_{clusters}.meta.json&#34;), &#34;w+&#34;) as f:
+            json_output = {
+                &#34;percent_similarity&#34;: percent_similarity,
+                &#34;largest_mismatch_pos&#34;: largest_mismatch_pos,
+                &#34;largest_mismatch&#34;: largest_mismatch,
+                &#34;clustered_mismatch_variance&#34;: clustered_mismatch_variance,
+                &#34;clustered_mismatches&#34;: clustered_mismatches,
+            }
+
+            if nucleotides:
+                json_output[&#34;dnds_ratio&#34;] = dnds_ratio
+
+            json.dump(
+                json_output,
+                f,
+            )
 
 
 if __name__ == &#34;__main__&#34;:
@@ -147,50 +148,51 @@ if __name__ == &#34;__main__&#34;:
         alignment_result.hamming_distance() / alignment_result.get_alignment_length()
     )
 
-    clustered_mismatches = alignment_result.clustered_mismatches(
-        cluster_count=CLUSTER_COUNT
-    )
-    clustered_mismatch_variance = alignment_result.clustered_mismatch_variance(
-        cluster_count=CLUSTER_COUNT
-    )
-
-    if nucleotides:
-        trimmed_alignment_1, trimmed_alignment_2 = trim_indels(alignment_result)
-        dnds_ratio = dnds(trimmed_alignment_1, trimmed_alignment_2)
-
-    # Output Supplementary Data 4
-    make_output_dir()
-    with open(get_output(seq2_filename + &#34;.aln.txt&#34;), &#34;w+&#34;) as f:
-        f.write(alignment_result.format_result(line_length=100))
-
-    with open(get_output(seq2_filename + &#34;.meta.txt&#34;), &#34;w+&#34;) as f:
-        f.write(
-            &#34;Formatted metadata -- not for programmatic use.\n\n&#34;
-            + f&#34;Information for alignment with {seq_name}:\n\n&#34;
-            + f&#34;Percent similarity: {percent_similarity}\n&#34;
-            + f&#34;Largest mismatch location: {largest_mismatch_pos}\n&#34;
-            + f&#34;Largest mismatch size: {largest_mismatch}bp\n&#34;
-            + f&#34;Variance between clusters ({CLUSTER_COUNT} clusters): {clustered_mismatch_variance}\n&#34;
-            + f&#34;Clustered mismatches: {clustered_mismatches}\n&#34;
-            + (f&#34;dN/dS ratio: {dnds_ratio}\n&#34; if nucleotides else &#34;&#34;)
+    for clusters in CLUSTER_COUNTS:
+        clustered_mismatches = alignment_result.clustered_mismatches(
+            cluster_count=clusters
+        )
+        clustered_mismatch_variance = alignment_result.clustered_mismatch_variance(
+            cluster_count=clusters
         )
 
-    with open(get_output(seq2_filename + &#34;.meta.json&#34;), &#34;w+&#34;) as f:
-        json_output = {
-            &#34;percent_similarity&#34;: percent_similarity,
-            &#34;largest_mismatch_pos&#34;: largest_mismatch_pos,
-            &#34;largest_mismatch&#34;: largest_mismatch,
-            &#34;clustered_mismatch_variance&#34;: clustered_mismatch_variance,
-            &#34;clustered_mismatches&#34;: clustered_mismatches,
-        }
-
         if nucleotides:
-            json_output[&#34;dnds_ratio&#34;] = dnds_ratio
+            trimmed_alignment_1, trimmed_alignment_2 = trim_indels(alignment_result)
+            dnds_ratio = dnds(trimmed_alignment_1, trimmed_alignment_2)
 
-        json.dump(
-            json_output,
-            f,
-        )</code></pre>
+        # Output Supplementary Data 4
+        make_output_dir()
+        with open(get_output(f&#34;{seq2_filename}_{clusters}.aln.txt&#34;), &#34;w+&#34;) as f:
+            f.write(alignment_result.format_result(line_length=100))
+
+        with open(get_output(f&#34;{seq2_filename}_{clusters}.meta.txt&#34;), &#34;w+&#34;) as f:
+            f.write(
+                &#34;Formatted metadata -- not for programmatic use.\n\n&#34;
+                + f&#34;Information for alignment with {seq_name}:\n\n&#34;
+                + f&#34;Percent similarity: {percent_similarity}\n&#34;
+                + f&#34;Largest mismatch location: {largest_mismatch_pos}\n&#34;
+                + f&#34;Largest mismatch size: {largest_mismatch}bp\n&#34;
+                + f&#34;Variance between clusters ({clusters} clusters): {clustered_mismatch_variance}\n&#34;
+                + f&#34;Clustered mismatches: {clustered_mismatches}\n&#34;
+                + (f&#34;dN/dS ratio: {dnds_ratio}\n&#34; if nucleotides else &#34;&#34;)
+            )
+
+        with open(get_output(f&#34;{seq2_filename}_{clusters}.meta.json&#34;), &#34;w+&#34;) as f:
+            json_output = {
+                &#34;percent_similarity&#34;: percent_similarity,
+                &#34;largest_mismatch_pos&#34;: largest_mismatch_pos,
+                &#34;largest_mismatch&#34;: largest_mismatch,
+                &#34;clustered_mismatch_variance&#34;: clustered_mismatch_variance,
+                &#34;clustered_mismatches&#34;: clustered_mismatches,
+            }
+
+            if nucleotides:
+                json_output[&#34;dnds_ratio&#34;] = dnds_ratio
+
+            json.dump(
+                json_output,
+                f,
+            )</code></pre>
 </details>
 </dd>
 </dl>
