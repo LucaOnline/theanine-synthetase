@@ -1,5 +1,6 @@
 """Entrypoint simulation orchestration script."""
 
+import argparse
 import json
 from subprocess import Popen, DEVNULL
 
@@ -33,7 +34,7 @@ def orchestrate_simulations(parallelism: int = 1):
                 "--trials",
                 str(SIMULATION_COUNT // parallelism),
             ],
-            stdout=DEVNULL,
+            stdout=DEVNULL,  # Suppress all console output from the child processes
         )
         for i in range(parallelism)
     ]
@@ -55,7 +56,16 @@ def orchestrate_simulations(parallelism: int = 1):
 
 
 if __name__ == "__main__":
+    # Parse arguments
+    parser = argparse.ArgumentParser(
+        description="Run a Monte-Carlo simulation for CsTSI and CsGSI alignment."
+    )
+    parser.add_argument("--instances", "-i", dest="instances", type=int)
+    args = parser.parse_args()
+
+    instances = args.instances
+
     # multiprocessing.cpu_count() can also be used, but there
     # are no guarantees that the CPU count will evenly divide
     # the number of trials.
-    orchestrate_simulations(parallelism=8)
+    orchestrate_simulations(parallelism=instances)

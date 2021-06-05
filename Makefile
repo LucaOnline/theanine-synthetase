@@ -27,4 +27,4 @@ analyze: ## Run the analysis
 	$(PYTHON_EXEC) analysis.py
 
 simulate: ## Run the Monte-Carlo simulation
-	$(PYTHON_EXEC) simulation_orchestrator.py
+	$(PYTHON_EXEC) simulation_orchestrator.py -i 8
