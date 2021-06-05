@@ -1,7 +1,7 @@
 """The `alignment` module provides an implementation of the Needleman-Wunsch alignment algorithm."""
 
 from typing import Tuple, Literal, List
-from math import ceil
+from math import floor
 
 import numpy as np
 
@@ -71,7 +71,7 @@ class AlignmentResult:
 
         match_string = self.get_match_string()
 
-        cluster_size = ceil(len(match_string) / cluster_count)
+        cluster_size = floor(len(match_string) / cluster_count)
 
         return [
             match_string[i * cluster_size : i * cluster_size + cluster_size].count(" ")

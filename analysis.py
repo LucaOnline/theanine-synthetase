@@ -3,13 +3,45 @@
 import json
 
 from dnds import dnds
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+import pandas as pd
+import seaborn as sns
 
-from alignment import align_sequences
+from alignment import AlignmentResult, align_sequences
 from data_index import CSTSI, CSGSI, CSTSI_PROTEIN, CSGSI_PROTEIN
 from dir_utils import get_data, make_output_dir, get_output
 from dnds_prep import trim_indels
 from options import CLUSTER_COUNTS
 from parse_fasta import parse_fasta
+
+
+def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
+    """Produces graphs with the mismatch cluster sizes and saves them to the output directory."""
+    sns.set_theme()
+
+    for clusters in CLUSTER_COUNTS:
+        # Build DataFrame of mismatch windows
+        df = pd.DataFrame(
+            {
+                f"{clusters}_clusters": alignment_result.clustered_mismatches(
+                    cluster_count=clusters
+                )
+            }
+        )
+
+        sns.relplot(data=df[f"{clusters}_clusters"], kind="line")
+        plt.title(f"Mismatches per alignment cluster ({clusters} clusters)")
+        plt.xlabel("Cluster #")
+        plt.ylabel("Mismatches")
+
+        fig = plt.gcf()
+        fig.set_size_inches(6, 8)
+
+        axes = plt.gca()
+        axes.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+        plt.savefig(get_output(f"{seq_filename}_clustered_mismatches_{clusters}.png"))
 
 
 def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
@@ -76,6 +108,8 @@ def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
                 json_output,
                 f,
             )
+
+    make_cluster_graphs(seq2_filename, alignment_result)
 
 
 if __name__ == "__main__":
