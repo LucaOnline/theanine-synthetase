@@ -12,6 +12,7 @@ jobs:
         uses: actions/checkout@v2
       - name: Generate documentation
         run: |
+          pip install -r requirements.txt
           pip install pdoc3
           make docs
       - name: Deploy documentation
