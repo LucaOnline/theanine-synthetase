@@ -53,7 +53,7 @@ class AlignmentResult:
             ]
         )
 
-    def clustered_mismatches(self, cluster_count: int = 6) -> List[int]:
+    def clustered_mismatches(self, cluster_count: int) -> List[int]:
         """
         Breaks the alignment into `cluster_count` clusters and
         returns the number of mismatches in each cluster. If the
@@ -73,7 +73,7 @@ class AlignmentResult:
             for i in range(0, len(match_string) // cluster_size)
         ]
 
-    def clustered_mismatch_variance(self, cluster_count: int = 6) -> float:
+    def clustered_mismatch_variance(self, cluster_count: int) -> float:
         """
         Returns the variance between the mismatch clusters. The
         raw cluster mismatches can be retrieved with the

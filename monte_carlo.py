@@ -1,3 +1,5 @@
+from math import nan
+from time import perf_counter
 from typing import Callable, TypeVar
 
 T = TypeVar("T")
@@ -21,21 +23,52 @@ def monte_carlo(
     effect_size_fn: Callable[[T], float],
     observed_effect_size: float,
     n_trials: int,
+    verbose: bool = False,
 ) -> MonteCarloSimulationResult:
     """
     Runs a Monte-Carlo simulation. Returns an object representing the result of the simulation,
     which will contain the final p-value.
 
-    simulation_fn: A function that runs a single trial of the simulation.
-    effect_size_fn: A function that calculates an effect size from the return value of the simulation function.
-    observed_effect_size: The observed effect size that is being tested.
-    n_trials: The number of trials to run. More trials will more precisely estimate the p-value.
+    `simulation_fn`: A function that runs a single trial of the simulation.
+    `effect_size_fn`: A function that calculates an effect size from the return value of the simulation function.
+    `observed_effect_size`: The observed effect size that is being tested.
+    `n_trials`: The number of trials to run. More trials will more precisely estimate the p-value.
+    `verbose`: Whether or not to perform logging to the console while the simulation is running.
     """
+
+    if verbose:
+        print("Beginning Monte-Carlo simulation with %d trials." % n_trials)
+        start_time = perf_counter()
+
+    def get_next_result(trial: int) -> bool:
+        if verbose:
+            elapsed_time = perf_counter() - start_time
+            eta_seconds = (
+                (elapsed_time / trial) * (n_trials + 1 - trial) if trial > 1 else nan
+            )
+            print(
+                "Running simulation %d/%d, estimated %.3f seconds remaining..."
+                % (trial, n_trials, eta_seconds)
+            )
+
+        next_effect_size = effect_size_fn(simulation_fn())
+        next_result = next_effect_size >= observed_effect_size
+
+        if verbose:
+            if next_result:
+                print("Simulation %d suceeded." % trial)
+            else:
+                print("Simulation %d failed." % trial)
+
+        return next_result
+
     successes = sum(
-        [
-            1 if effect_size_fn(simulation_fn(trial)) >= observed_effect_size else 0
-            for trial in range(n_trials)
-        ]
+        [1 if get_next_result(trial + 1) else 0 for trial in range(n_trials)]
     )
+
     p_value = successes / n_trials
+
+    if verbose:
+        print("Monte-Carlo simulation completed. Final p-value: %.6f" % p_value)
+
     return MonteCarloSimulationResult(p_value)
