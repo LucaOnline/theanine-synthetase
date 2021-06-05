@@ -21,6 +21,9 @@ TRP = "W"
 TYR = "Y"
 VAL = "V"
 
+# Almost all of the mRNA transcripts on NCBI seem to be cDNA,
+# so I'm keeping it that way to be faithful to the original data
+
 STOP_CODONS = ["TAA", "TAG", "TGA"]
 
 AMINO_ACID_TRANSLATIONS = {
