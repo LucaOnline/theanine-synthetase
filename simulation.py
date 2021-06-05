@@ -8,7 +8,7 @@ from alignment import align_sequences, AlignmentResult
 from data_index import CSTSI_PROTEIN, CSGSI_PROTEIN
 from dir_utils import get_data, make_output_dir, get_output
 from monte_carlo import monte_carlo
-from options import CLUSTER_COUNT
+from options import CLUSTER_COUNTS
 from parse_fasta import parse_fasta
 
 
@@ -65,23 +65,25 @@ if __name__ == "__main__":
     csgsi_seq = list(parse_fasta(get_data(CSGSI_PROTEIN)))[0][1]
     alignment_result = align_sequences(csgsi_seq, cstsi_seq, nucleotides=False)
 
-    print(
-        "Variance between clusters: "
-        + str(alignment_result.clustered_mismatch_variance(cluster_count=CLUSTER_COUNT))
-    )
+    for clusters in CLUSTER_COUNTS:
+        print(
+            f"Variance between clusters ({clusters} clusters): {str(alignment_result.clustered_mismatch_variance(cluster_count=clusters))}"
+        )
 
-    # Simulate random sequences
-    simulation_result = monte_carlo(
-        get_clustering_simulation_fn(cstsi_seq, csgsi_seq),
-        get_effect_size_fn(cluster_count=CLUSTER_COUNT),
-        observed_effect_size=alignment_result.clustered_mismatch_variance(
-            cluster_count=CLUSTER_COUNT
-        ),
-        n_trials=n_trials,
-    )
+        # Simulate random sequences
+        simulation_result = monte_carlo(
+            get_clustering_simulation_fn(cstsi_seq, csgsi_seq),
+            get_effect_size_fn(cluster_count=clusters),
+            observed_effect_size=alignment_result.clustered_mismatch_variance(
+                cluster_count=clusters
+            ),
+            n_trials=n_trials,
+        )
 
-    make_output_dir()
-    with open(get_output(f"monte_carlo.{simulation_id}.json"), "w+") as f:
-        f.write(simulation_result.to_json())
+        make_output_dir()
+        with open(
+            get_output(f"monte_carlo_{clusters}.{simulation_id}.json"), "w+"
+        ) as f:
+            f.write(simulation_result.to_json())
 
-    simulation_result.examine()
+        simulation_result.examine()
