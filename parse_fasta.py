@@ -1,3 +1,5 @@
+"""This module exposes functions for reading FASTA files."""
+
 from typing import Iterator, Tuple
 
 

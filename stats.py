@@ -1,3 +1,5 @@
+"""The `stats` module exposes statistical functions used in this project."""
+
 import numpy as np
 
 

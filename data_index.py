@@ -1,3 +1,5 @@
+"""Remote data file information about CsTSI and multiple GS gene transcripts."""
+
 CSTSI = "cstsi.fas"
 CSGSI = "csgsi.fas"
 VVGS = "vvgs.fas"

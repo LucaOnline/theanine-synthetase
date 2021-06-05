@@ -1,3 +1,5 @@
+"""Project input and output file utility functions."""
+
 import os
 
 

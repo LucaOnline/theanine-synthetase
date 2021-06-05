@@ -1,3 +1,5 @@
+"""The `alignment` module provides an implementation of the Needleman-Wunsch alignment algorithm."""
+
 from typing import Tuple, Literal, List
 from math import ceil
 

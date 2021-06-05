@@ -1,5 +1,8 @@
+"""The `monte_carlo` module provides an implementation of a Monte-Carlo simulation."""
+
 import json
 from math import nan
+
 from time import perf_counter
 from typing import Callable, TypeVar
 
