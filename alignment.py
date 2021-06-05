@@ -181,14 +181,18 @@ def backtrack(quad: np.ndarray) -> EditMove:
 
 
 def score_cell(
-    quad: np.ndarray, top_char: str, left_char: str, nucleotides: bool
+    quad: np.ndarray,
+    top_char: str,
+    left_char: str,
+    nucleotides: bool,
+    chemical_classes: dict,
 ) -> np.int:
     """Calculate the Needleman-Wunsch score for a cell."""
     down_score = quad[0, 1] - 1
     right_score = quad[1, 0] - 1
 
     # Penalize transversions more heavily
-    if nucleotides and CHEMICAL_CLASS[top_char] != CHEMICAL_CLASS[left_char]:
+    if nucleotides and chemical_classes[top_char] != chemical_classes[left_char]:
         down_score -= 1
         right_score -= 1
 
@@ -211,6 +215,8 @@ def align_sequences(
     size1 = len(top_seq) + 1
     size2 = len(left_seq) + 1
 
+    chemical_classes = CHEMICAL_CLASS  # Copy this into the local scope so it can be accessed more quickly
+
     # Build search matrix
     search = np.zeros((size2, size1), dtype=np.int)
     search[0] = [i for i in range(0, -size1, -1)]
@@ -224,6 +230,7 @@ def align_sequences(
                 top_seq[y - 1],
                 left_seq[x - 1],
                 nucleotides,
+                chemical_classes,
             )
     search = search.T
 
