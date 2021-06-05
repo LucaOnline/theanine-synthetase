@@ -77,7 +77,6 @@ if __name__ == "__main__":
             cluster_count=CLUSTER_COUNT
         ),
         n_trials=n_trials,
-        verbose=True,
     )
 
     make_output_dir()
