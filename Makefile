@@ -1,7 +1,7 @@
 SHELL := /bin/bash
 .DEFAULT_GOAL := help
 
-.PHONY: install data check_occurrences
+.PHONY: install data analyze simulate docs
 
 PYTHON_EXEC = python
 ifeq (, $(shell which python))
