@@ -64,12 +64,24 @@ def monte_carlo(
     def get_next_result(trial: int) -> bool:
         if verbose:
             elapsed_time = perf_counter() - start_time
-            eta_seconds = (
-                (elapsed_time / trial) * (n_trials + 1 - trial) if trial > 1 else nan
-            )
+            eta = (elapsed_time / trial) * (n_trials + 1 - trial) if trial > 1 else nan
+            eta_units = "seconds"
+
+            if eta > 59:
+                eta /= 60
+                eta_units = "minutes"
+
+            if eta > 59:
+                eta /= 60
+                eta_units = "hours"
+
+            if eta > 23:
+                eta /= 24
+                eta_units = "days"
+
             print(
-                "Running simulation %d/%d, estimated %.3f seconds remaining..."
-                % (trial, n_trials, eta_seconds)
+                "Running simulation %d/%d, estimated %.3f %s remaining..."
+                % (trial, n_trials, eta, eta_units)
             )
 
         next_effect_size = effect_size_fn(simulation_fn())
