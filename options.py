@@ -4,4 +4,4 @@
 CLUSTER_COUNT = 20
 
 # Number of simulations to perform
-SIMULATION_COUNT = 1000
+SIMULATION_COUNT = 10000
