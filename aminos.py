@@ -1,5 +1,8 @@
 """The `aminos` modules contains utilities for interpreting nucleotide sequences in terms of amino acids."""
 
+from typing import Iterator
+
+
 ALA = "A"
 ARG = "R"
 ASN = "N"
@@ -97,3 +100,28 @@ def changes_amino(codon1: str, codon2: str) -> bool:
     amino acid that codon1 encodes.
     """
     return AMINO_ACID_TRANSLATIONS[codon1] != AMINO_ACID_TRANSLATIONS[codon2]
+
+
+def codons(sequence: str) -> Iterator[str]:
+    """
+    Iterates over each codon of the provided sequence. Leading nucleotides
+    are discarded until a start codon is reached, and nucleotides after the
+    first stop codon are ignored.
+    """
+    start_index = sequence.find("ATG")
+    if start_index == -1:
+        raise ValueError("no start codon found")
+
+    sequence = sequence[start_index:]
+    codons = [sequence[i * 3 : i * 3 + 3] for i in range(0, len(sequence) // 3)]
+
+    stopped = False
+    for codon in codons:
+        if codon not in STOP_CODONS:
+            yield codon
+        else:
+            stopped = True
+            break
+
+    if not stopped:
+        raise ValueError("sequence had no stop codon")
