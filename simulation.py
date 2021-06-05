@@ -80,7 +80,7 @@ if __name__ == "__main__":
     )
 
     make_output_dir()
-    with open(get_output(f"monte_carlo.{simulation_id}.txt"), "w+") as f:
-        f.write(simulation_result.format_result())
+    with open(get_output(f"monte_carlo.{simulation_id}.json"), "w+") as f:
+        f.write(simulation_result.to_json())
 
     simulation_result.examine()

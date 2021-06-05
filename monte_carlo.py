@@ -1,3 +1,4 @@
+import json
 from math import nan
 from time import perf_counter
 from typing import Callable, TypeVar
@@ -25,6 +26,16 @@ class MonteCarloSimulationResult:
     def format_result(self):
         """Formats the results of the simulation for external use."""
         return f"Monte-Carlo simulation summary:\nTrials: {self.n_trials}\nSuccesses: {self.n_successes}\np-value: {self.p_value}"
+
+    def to_json(self):
+        """Formats the results of the simulation as a JSON string and returns it."""
+        return json.dumps(
+            {
+                "p_value": self.p_value,
+                "n_trials": self.n_trials,
+                "n_successes": self.n_successes,
+            }
+        )
 
     def get_p_value(self):
         """Returns the estimated p-value of the simmulation."""
@@ -96,11 +107,11 @@ def monte_carlo(
         return next_result
 
     trials = [get_next_result(trial + 1) for trial in range(n_trials)]
-    successes = sum(trials)  # Yes, this is summing booleans
+    n_successes = sum(trials)  # Yes, this is summing booleans
 
-    p_value = successes / n_trials
+    p_value = n_successes / n_trials
 
     if verbose:
         print("Monte-Carlo simulation completed. Final p-value: %.6f" % p_value)
 
-    return MonteCarloSimulationResult(p_value, n_trials, successes)
+    return MonteCarloSimulationResult(p_value, n_trials, n_successes)
