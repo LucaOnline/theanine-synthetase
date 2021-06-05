@@ -1,4 +1,4 @@
-"""Remote data file information about CsTSI and multiple GS gene transcripts."""
+"""The `data_index` module contains remote data file information about CsTSI and multiple GS gene transcripts."""
 
 CSTSI = "cstsi.fas"
 CSGSI = "csgsi.fas"

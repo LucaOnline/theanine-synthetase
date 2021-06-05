@@ -1,9 +1,14 @@
-"""This module exposes functions for reading FASTA files."""
+"""The `parse_fasta` module exposes functions for reading FASTA files."""
 
 from typing import Iterator, Tuple
 
 
 def parse_fasta(filename: str) -> Iterator[Tuple[str, str]]:
+    """
+    Parses the FASTA file with the provided filename. Returns
+    an iterator of tuples, structured with the sequence name
+    in the first element and the sequence itself in the second.
+    """
     with open(filename, "r") as f:
         data = f.read()
 

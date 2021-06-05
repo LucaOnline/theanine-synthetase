@@ -1,4 +1,4 @@
-"""Input and output file/directory utility functions."""
+"""The `dir_utils` module has input and output file/directory utility functions."""
 
 import os
 
