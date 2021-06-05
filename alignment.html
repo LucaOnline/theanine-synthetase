@@ -30,7 +30,7 @@
 <pre><code class="python">&#34;&#34;&#34;The `alignment` module provides an implementation of the Needleman-Wunsch alignment algorithm.&#34;&#34;&#34;
 
 from typing import Tuple, Literal, List
-from math import ceil
+from math import floor
 
 import numpy as np
 
@@ -100,7 +100,7 @@ class AlignmentResult:
 
         match_string = self.get_match_string()
 
-        cluster_size = ceil(len(match_string) / cluster_count)
+        cluster_size = floor(len(match_string) / cluster_count)
 
         return [
             match_string[i * cluster_size : i * cluster_size + cluster_size].count(&#34; &#34;)
@@ -492,7 +492,7 @@ two sequences.</p></div>
 
         match_string = self.get_match_string()
 
-        cluster_size = ceil(len(match_string) / cluster_count)
+        cluster_size = floor(len(match_string) / cluster_count)
 
         return [
             match_string[i * cluster_size : i * cluster_size + cluster_size].count(&#34; &#34;)
@@ -633,7 +633,7 @@ of the mismatches.</p></div>
 
     match_string = self.get_match_string()
 
-    cluster_size = ceil(len(match_string) / cluster_count)
+    cluster_size = floor(len(match_string) / cluster_count)
 
     return [
         match_string[i * cluster_size : i * cluster_size + cluster_size].count(&#34; &#34;)

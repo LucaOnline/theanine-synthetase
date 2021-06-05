@@ -32,13 +32,45 @@
 import json
 
 from dnds import dnds
+import matplotlib.pyplot as plt
+from matplotlib.ticker import MaxNLocator
+import pandas as pd
+import seaborn as sns
 
-from alignment import align_sequences
+from alignment import AlignmentResult, align_sequences
 from data_index import CSTSI, CSGSI, CSTSI_PROTEIN, CSGSI_PROTEIN
 from dir_utils import get_data, make_output_dir, get_output
 from dnds_prep import trim_indels
 from options import CLUSTER_COUNTS
 from parse_fasta import parse_fasta
+
+
+def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
+    &#34;&#34;&#34;Produces graphs with the mismatch cluster sizes and saves them to the output directory.&#34;&#34;&#34;
+    sns.set_theme()
+
+    for clusters in CLUSTER_COUNTS:
+        # Build DataFrame of mismatch windows
+        df = pd.DataFrame(
+            {
+                f&#34;{clusters}_clusters&#34;: alignment_result.clustered_mismatches(
+                    cluster_count=clusters
+                )
+            }
+        )
+
+        sns.relplot(data=df[f&#34;{clusters}_clusters&#34;], kind=&#34;line&#34;)
+        plt.title(f&#34;Mismatches per alignment cluster ({clusters} clusters)&#34;)
+        plt.xlabel(&#34;Cluster #&#34;)
+        plt.ylabel(&#34;Mismatches&#34;)
+
+        fig = plt.gcf()
+        fig.set_size_inches(6, 8)
+
+        axes = plt.gca()
+        axes.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+        plt.savefig(get_output(f&#34;{seq_filename}_clustered_mismatches_{clusters}.png&#34;))
 
 
 def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
@@ -105,6 +137,8 @@ def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
                 json_output,
                 f,
             )
+
+    make_cluster_graphs(seq2_filename, alignment_result)
 
 
 if __name__ == &#34;__main__&#34;:
@@ -192,7 +226,46 @@ if __name__ == &#34;__main__&#34;:
             json.dump(
                 json_output,
                 f,
-            )</code></pre>
+            )
+
+    make_cluster_graphs(seq2_filename, alignment_result)</code></pre>
+</details>
+</dd>
+<dt id="theanine-synthetase.analysis.make_cluster_graphs"><code class="name flex">
+<span>def <span class="ident">make_cluster_graphs</span></span>(<span>seq_filename: str, alignment_result: alignment.AlignmentResult)</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Produces graphs with the mismatch cluster sizes and saves them to the output directory.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
+    &#34;&#34;&#34;Produces graphs with the mismatch cluster sizes and saves them to the output directory.&#34;&#34;&#34;
+    sns.set_theme()
+
+    for clusters in CLUSTER_COUNTS:
+        # Build DataFrame of mismatch windows
+        df = pd.DataFrame(
+            {
+                f&#34;{clusters}_clusters&#34;: alignment_result.clustered_mismatches(
+                    cluster_count=clusters
+                )
+            }
+        )
+
+        sns.relplot(data=df[f&#34;{clusters}_clusters&#34;], kind=&#34;line&#34;)
+        plt.title(f&#34;Mismatches per alignment cluster ({clusters} clusters)&#34;)
+        plt.xlabel(&#34;Cluster #&#34;)
+        plt.ylabel(&#34;Mismatches&#34;)
+
+        fig = plt.gcf()
+        fig.set_size_inches(6, 8)
+
+        axes = plt.gca()
+        axes.xaxis.set_major_locator(MaxNLocator(integer=True))
+
+        plt.savefig(get_output(f&#34;{seq_filename}_clustered_mismatches_{clusters}.png&#34;))</code></pre>
 </details>
 </dd>
 </dl>
@@ -214,6 +287,7 @@ if __name__ == &#34;__main__&#34;:
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
 <li><code><a title="theanine-synthetase.analysis.analyze" href="#theanine-synthetase.analysis.analyze">analyze</a></code></li>
+<li><code><a title="theanine-synthetase.analysis.make_cluster_graphs" href="#theanine-synthetase.analysis.make_cluster_graphs">make_cluster_graphs</a></code></li>
 </ul>
 </li>
 </ul>
