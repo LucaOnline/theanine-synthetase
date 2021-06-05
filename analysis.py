@@ -95,6 +95,7 @@ if __name__ == "__main__":
             cluster_count=cluster_count
         ),
         n_trials=1000,
+        verbose=True,
     )
 
     with open(get_output("monte_carlo.txt"), "w+") as f:
