@@ -6,7 +6,7 @@ from subprocess import Popen, DEVNULL
 
 from dir_utils import get_output
 from monte_carlo import MonteCarloSimulationResult
-from options import SIMULATION_COUNT
+from options import SIMULATION_COUNT, CLUSTER_COUNTS
 
 
 def orchestrate_simulations(parallelism: int = 1):
@@ -39,20 +39,21 @@ def orchestrate_simulations(parallelism: int = 1):
         for i in range(parallelism)
     ]
 
-    n_trials = 0
-    n_successes = 0
-    for i, simulation in enumerate(simulations):
-        simulation.wait()
-        with open(get_output(f"monte_carlo.{i}.json"), "r+") as f:
-            data = json.load(f)
-            n_trials += data["n_trials"]
-            n_successes += data["n_successes"]
+    for clusters in CLUSTER_COUNTS:
+        n_trials = 0
+        n_successes = 0
+        for i, simulation in enumerate(simulations):
+            simulation.wait()
+            with open(get_output(f"monte_carlo_{clusters}.{i}.json"), "r+") as f:
+                data = json.load(f)
+                n_trials += data["n_trials"]
+                n_successes += data["n_successes"]
 
-    p_value = n_successes / n_trials
+        p_value = n_successes / n_trials
 
-    aggregated_result = MonteCarloSimulationResult(p_value, n_trials, n_successes)
-    with open(get_output(f"monte_carlo.agg.txt"), "w+") as f:
-        f.write(aggregated_result.format_result())
+        aggregated_result = MonteCarloSimulationResult(p_value, n_trials, n_successes)
+        with open(get_output(f"monte_carlo_{clusters}.agg.txt"), "w+") as f:
+            f.write(aggregated_result.format_result())
 
 
 if __name__ == "__main__":
