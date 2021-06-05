@@ -1,4 +1,4 @@
-"""Project input and output file utility functions."""
+"""Input and output file/directory utility functions."""
 
 import os
 

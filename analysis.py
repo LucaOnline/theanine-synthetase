@@ -1,3 +1,5 @@
+"""Entrypoint analysis script."""
+
 import json
 
 from alignment import align_sequences

@@ -1,3 +1,5 @@
+"""Entrypoint data download script."""
+
 import gzip
 import os
 import requests

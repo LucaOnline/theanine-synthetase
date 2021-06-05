@@ -1,3 +1,5 @@
+"""Entrypoint simulation orchestration script."""
+
 import json
 from subprocess import Popen, DEVNULL
 

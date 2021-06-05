@@ -1,3 +1,5 @@
+"""Entrypoint simulation script."""
+
 import argparse
 from random import shuffle
 import sys
