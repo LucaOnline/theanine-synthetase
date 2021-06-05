@@ -20,3 +20,6 @@ data: ## Download datasets
 
 analyze: ## Run the analysis
 	$(PYTHON_EXEC) analysis.py
+
+simulate: ## Run the Monte-Carlo simulation
+	$(PYTHON_EXEC) simulation_orchestrator.py

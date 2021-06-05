@@ -7,6 +7,6 @@ def variance(data: np.ndarray, sample: bool = True) -> float:
     The `sample` kwarg controls whether the input data should be
     treated as a sample or a population.
     """
-    numerator = np.sum(np.square(data) - np.square(data.sum()) / data.size)
+    numerator = np.sum(np.sum(np.square(data)) - np.square(np.sum(data)) / data.size)
     denominator = data.size - 1 if sample else data.size  # if population
     return numerator / denominator

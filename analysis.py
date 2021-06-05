@@ -5,21 +5,14 @@ from parse_fasta import parse_fasta
 
 
 if __name__ == "__main__":
+    # Read CsTSI sequence
     cstsi_mrna = list(parse_fasta(get_data(CSTSI)))[0][1]
-    cluster_count = (
-        15  # Number of clusters to use in mismatch clustering variance analysis
-    )
 
     # Analyze CsGSI sequence
     print("Analyzing %s..." % CSGSI)
 
     csgsi_seq = list(parse_fasta(get_data(CSGSI)))[0][1]
     alignment_result = align_sequences(csgsi_seq, cstsi_mrna, nucleotides=True)
-
-    print(
-        "Variance between clusters: "
-        + str(alignment_result.clustered_mismatch_variance(cluster_count=cluster_count))
-    )
 
     largest_mismatch_pos, largest_mismatch = alignment_result.largest_mismatch()
     percent_similarity = 1 - (
