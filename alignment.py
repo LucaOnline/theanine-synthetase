@@ -84,7 +84,8 @@ class AlignmentResult:
         the number of clusters used.
         """
         return variance(
-            self.clustered_mismatches(cluster_count=cluster_count), sample=False
+            np.array(self.clustered_mismatches(cluster_count=cluster_count)),
+            sample=False,
         )
 
     def matches(self) -> int:

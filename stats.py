@@ -1,12 +1,12 @@
-from typing import List
+import numpy as np
 
 
-def variance(data: List[int], sample: bool = True) -> float:
+def variance(data: np.ndarray, sample: bool = True) -> float:
     """
     Calculates the variance within the provided sample or population.
     The `sample` kwarg controls whether the input data should be
     treated as a sample or a population.
     """
-    numerator = sum(map(lambda x: x * x, data)) - ((sum(data) ** 2) / len(data))
-    denominator = len(data) - 1 if sample else len(data)  # if population
+    numerator = np.sum(np.square(data) - np.square(data.sum()) / data.size)
+    denominator = data.size - 1 if sample else data.size  # if population
     return numerator / denominator
