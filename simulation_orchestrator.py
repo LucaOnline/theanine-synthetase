@@ -54,6 +54,8 @@ def orchestrate_simulations(parallelism: int = 1):
         aggregated_result = MonteCarloSimulationResult(p_value, n_trials, n_successes)
         with open(get_output(f"monte_carlo_{clusters}.agg.txt"), "w+") as f:
             f.write(aggregated_result.format_result())
+        with open(get_output(f"monte_carlo_{clusters}.agg.json"), "w+") as f:
+            f.write(aggregated_result.to_json())
 
 
 if __name__ == "__main__":
