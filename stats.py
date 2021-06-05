@@ -1,7 +1,7 @@
 import numpy as np
 
 
-def variance(data: np.ndarray, sample: bool = True) -> float:
+def variance(data: np.ndarray, sample: bool = True) -> np.float64:
     """
     Calculates the variance within the provided sample or population.
     The `sample` kwarg controls whether the input data should be

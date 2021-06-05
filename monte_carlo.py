@@ -3,6 +3,8 @@ from math import nan
 from time import perf_counter
 from typing import Callable, TypeVar
 
+import numpy as np
+
 T = TypeVar("T")
 
 
@@ -52,8 +54,8 @@ class MonteCarloSimulationResult:
 
 def monte_carlo(
     simulation_fn: Callable[[], T],
-    effect_size_fn: Callable[[T], float],
-    observed_effect_size: float,
+    effect_size_fn: Callable[[T], np.float64],
+    observed_effect_size: np.float64,
     n_trials: int,
     verbose: bool = False,
 ) -> MonteCarloSimulationResult:
@@ -114,4 +116,5 @@ def monte_carlo(
     if verbose:
         print("Monte-Carlo simulation completed. Final p-value: %.6f" % p_value)
 
-    return MonteCarloSimulationResult(p_value, n_trials, n_successes)
+    # These can have numpy dtypes, which aren't serializable
+    return MonteCarloSimulationResult(float(p_value), int(n_trials), int(n_successes))
