@@ -14,11 +14,13 @@ jobs:
         uses: actions/setup-python@v2
         with:
           python-version: '3.8'
+      - name: Generate documentation
+        run: |
+          pip install -r requirements.txt
+          pip install pdoc3
+          make docs
       - name: Deploy documentation
-        uses: JacksonMaxfield/github-pages-deploy-action-python@master
-        env:
-          ACCESS_TOKEN: ${{ secrets.ACCESS_TOKEN }}
-          BASE_BRANCH: main
-          BRANCH: gh-pages
-          FOLDER: docs
-          BUILD_SCRIPT: pip install -r requirements.txt && pip install pdoc3 && make docs
+        uses: JamesIves/github-pages-deploy-action@4.1.4
+        with:
+          branch: gh-pages
+          folder: docs
