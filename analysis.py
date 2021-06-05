@@ -36,7 +36,8 @@ if __name__ == "__main__":
 
     with open(get_output(CSGSI + ".meta.txt"), "w+") as f:
         f.write(
-            "Formatted metadata -- not for programmatic use.\n"
+            "Formatted metadata -- not for programmatic use.\n\n"
+            + "Information for alignment with CsTSI:\n\n"
             + f"Percent similarity: {percent_similarity}\n"
             + f"Largest mismatch location: {largest_mismatch_pos}\n"
             + f"Largest mismatch size: {largest_mismatch}bp\n"
