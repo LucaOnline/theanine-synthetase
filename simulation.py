@@ -2,11 +2,10 @@
 
 import argparse
 from random import shuffle
-import sys
 from typing import Callable
 
 from alignment import align_sequences, AlignmentResult
-from data_index import CSTSI, CSGSI
+from data_index import CSTSI_PROTEIN, CSGSI_PROTEIN
 from dir_utils import get_data, make_output_dir, get_output
 from monte_carlo import monte_carlo
 from options import CLUSTER_COUNT
@@ -27,7 +26,7 @@ def get_clustering_simulation_fn(
         shuffle(rand_seq_list)
         rand_seq = "".join(rand_seq_list)
 
-        return align_sequences(rand_seq, cstsi_sequence, nucleotides=True)
+        return align_sequences(rand_seq, cstsi_sequence, nucleotides=False)
 
     return simulation_fn
 
@@ -58,13 +57,13 @@ if __name__ == "__main__":
     n_trials = args.n_trials
 
     # Read CsTSI sequence
-    cstsi_mrna = list(parse_fasta(get_data(CSTSI)))[0][1]
+    cstsi_seq = list(parse_fasta(get_data(CSTSI_PROTEIN)))[0][1]
 
     # Analyze CsGSI sequence
-    print("Analyzing %s..." % CSGSI)
+    print("Analyzing %s..." % CSGSI_PROTEIN)
 
-    csgsi_seq = list(parse_fasta(get_data(CSGSI)))[0][1]
-    alignment_result = align_sequences(csgsi_seq, cstsi_mrna, nucleotides=True)
+    csgsi_seq = list(parse_fasta(get_data(CSGSI_PROTEIN)))[0][1]
+    alignment_result = align_sequences(csgsi_seq, cstsi_seq, nucleotides=False)
 
     print(
         "Variance between clusters: "
@@ -73,7 +72,7 @@ if __name__ == "__main__":
 
     # Simulate random sequences
     simulation_result = monte_carlo(
-        get_clustering_simulation_fn(cstsi_mrna, csgsi_seq),
+        get_clustering_simulation_fn(cstsi_seq, csgsi_seq),
         get_effect_size_fn(cluster_count=CLUSTER_COUNT),
         observed_effect_size=alignment_result.clustered_mismatch_variance(
             cluster_count=CLUSTER_COUNT
