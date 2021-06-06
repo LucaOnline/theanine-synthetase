@@ -23,14 +23,10 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
     for clusters in CLUSTER_COUNTS:
         # Build DataFrame of mismatch windows
         df = pd.DataFrame(
-            {
-                f"{clusters}_clusters": alignment_result.clustered_mismatches(
-                    cluster_count=clusters
-                )
-            }
+            {"clusters": alignment_result.clustered_mismatches(cluster_count=clusters)}
         )
 
-        sns.relplot(data=df[f"{clusters}_clusters"], kind="line")
+        sns.relplot(data=df["clusters"], kind="line")
 
         plt.title(f"Mismatches per alignment cluster ({clusters} clusters)")
         plt.xlabel("Cluster #")
@@ -39,6 +35,8 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
         fig = plt.gcf()
         fig.set_size_inches(7, 8)
 
+        y_max = df["clusters"].max()
+        plt.yticks(np.arange(y_max + 1), np.arange(y_max + 1))
         plt.xticks(np.arange(clusters), np.arange(1, clusters + 1))
 
         plt.savefig(get_output(f"{seq_filename}_clustered_mismatches_{clusters}.png"))
