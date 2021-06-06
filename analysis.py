@@ -4,7 +4,6 @@ import json
 
 from dnds import dnds
 import matplotlib.pyplot as plt
-from matplotlib.ticker import MaxNLocator
 import numpy as np
 import pandas as pd
 import seaborn as sns
@@ -12,7 +11,7 @@ import seaborn as sns
 from alignment import AlignmentResult, align_sequences
 from data_index import CSTSI, CSGSI, CSTSI_PROTEIN, CSGSI_PROTEIN
 from dir_utils import get_data, make_output_dir, get_output
-from dnds_prep import trim_indels
+from dnds_prep import trim_for_dnds
 from options import CLUSTER_COUNTS
 from parse_fasta import parse_fasta
 
@@ -73,7 +72,7 @@ def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
         )
 
         if nucleotides:
-            trimmed_alignment_1, trimmed_alignment_2 = trim_indels(alignment_result)
+            trimmed_alignment_1, trimmed_alignment_2 = trim_for_dnds(alignment_result)
             dnds_ratio = dnds(trimmed_alignment_1, trimmed_alignment_2)
 
         # Output Supplementary Data 4
