@@ -33,9 +33,9 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
 
         sns.relplot(data=df["clusters"], kind="line")
 
-        plt.title(f"Mismatches per alignment cluster ({clusters} clusters)")
-        plt.xlabel("Cluster #")
-        plt.ylabel("Mismatches")
+        plt.title(f"mismatches per alignment cluster ({clusters} clusters)")
+        plt.xlabel("cluster #")
+        plt.ylabel("mismatches")
 
         fig = plt.gcf()
         fig.set_size_inches(7, 8)
@@ -48,43 +48,47 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
 
 
 def make_dnds_graph(
-    output_filename: str,
+    seq_filename: str,
     window_sizes: List[int],
-    dnds_ratio_data: List[List[Tuple[int, float]]],
+    dnds_ratio_data: List[Tuple[List[int], List[float]]],
 ):
     """
-    Produces a single graph showing dN/dS ratios across a whole sequence and saves
-    it to the output directory. `window_sizes` and `dnds_ratio_data` are expected
+    Produces several graphs showing dN/dS ratios across a whole sequence and saves
+    them to the output directory. `window_sizes` and `dnds_ratio_data` are expected
     to be in the same order with respect to the analyses they represent.
     """
     sns.set_theme()
 
-    df = pd.DataFrame(
-        {
-            f"{window_size}bp": dnds_ratios
-            for window_size, dnds_ratios in zip(window_sizes, dnds_ratio_data)
-        }
-    )
+    for i, window_size in enumerate(window_sizes):
+        df = pd.DataFrame({"bp": dnds_ratio_data[i][0], "ratio": dnds_ratio_data[i][1]})
+        df = df.set_index("bp")
 
-    sns.relplot(data=df, kind="line")
+        sns.relplot(data=df, kind="line")
 
-    plt.show()
+        plt.title(f"dN/dS ratios over windows of size {window_size}")
+        plt.xlabel("window starting bp")
+
+        fig = plt.gcf()
+        fig.set_size_inches(18, 6)
+
+        plt.savefig(get_output(f"{seq_filename}_dnds_{window_size}.png"))
 
 
 def sliding_window_dnds(
     sequence_1: str, sequence_2: str, window_size: int
-) -> List[Tuple[int, float]]:
+) -> Tuple[List[int], List[float]]:
     """
     Performs a sliding-window dN/dS analysis over the provided sequences.
     Returns a list of tuples (start_base_pair, dnds_ratio).
     """
-    windows = enumerate(
-        zip(
-            list(sliding_window(sequence_1, n=window_size)),
-            list(sliding_window(sequence_2, n=window_size)),
-        )
+    windows = zip(
+        sliding_window(sequence_1, n=window_size),
+        sliding_window(sequence_2, n=window_size),
     )
-    return [(i * window_size, dnds(*window_pair)) for i, window_pair in windows]
+    return (
+        [i for i in range(len(sequence_1) - window_size + 1)],
+        [dnds(*window_pair) for window_pair in windows],
+    )
 
 
 def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
@@ -106,6 +110,16 @@ def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
         alignment_result.hamming_distance() / alignment_result.get_alignment_length()
     )
 
+    if nucleotides:
+        trimmed_alignment_1, trimmed_alignment_2 = trim_for_dnds(alignment_result)
+        dnds_ratio_data = [
+            sliding_window_dnds(trimmed_alignment_1, trimmed_alignment_2, window_size=i)
+            for i in DNDS_WINDOW_SIZES
+        ]
+        make_dnds_graph(
+            f"{seq2_filename}_dnds_ratios.png", DNDS_WINDOW_SIZES, dnds_ratio_data
+        )
+
     for clusters in CLUSTER_COUNTS:
         clustered_mismatches = alignment_result.clustered_mismatches(
             cluster_count=clusters
@@ -113,18 +127,6 @@ def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
         clustered_mismatch_variance = alignment_result.clustered_mismatch_variance(
             cluster_count=clusters
         )
-
-        if nucleotides:
-            trimmed_alignment_1, trimmed_alignment_2 = trim_for_dnds(alignment_result)
-            dnds_ratio_data = [
-                sliding_window_dnds(
-                    trimmed_alignment_1, trimmed_alignment_2, window_size=i
-                )
-                for i in DNDS_WINDOW_SIZES
-            ]
-            make_dnds_graph(
-                f"{seq2_filename}_dnds_ratios.png", DNDS_WINDOW_SIZES, dnds_ratio_data
-            )
 
         # Output Supplementary Data 4
         make_output_dir()
