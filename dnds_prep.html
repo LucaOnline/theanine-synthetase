@@ -36,10 +36,10 @@ from typing import Tuple
 from alignment import AlignmentResult
 
 
-def trim_indels(alignment: AlignmentResult) -&gt; Tuple[str, str]:
+def trim_for_dnds(alignment: AlignmentResult) -&gt; Tuple[str, str]:
     &#34;&#34;&#34;
-    Trims indels from the provided alignment and returns a
-    tuple (alignment_1, alignment_2).
+    Trims indels from the provided alignment, along with trailing nucleotides,
+    and returns a tuple (alignment_1, alignment_2).
     &#34;&#34;&#34;
 
     alignment_1 = alignment.get_alignment_1()
@@ -51,6 +51,13 @@ def trim_indels(alignment: AlignmentResult) -&gt; Tuple[str, str]:
 
     trimmed_1 = &#34;&#34;.join([c for i, c in enumerate(alignment_1) if not i in indels_all])
     trimmed_2 = &#34;&#34;.join([c for i, c in enumerate(alignment_2) if not i in indels_all])
+
+    trimmed_1 = &#34;&#34;.join(
+        [trimmed_1[i * 3 : i * 3 + 3] for i in range(0, len(trimmed_1) // 3)]
+    )
+    trimmed_2 = &#34;&#34;.join(
+        [trimmed_2[i * 3 : i * 3 + 3] for i in range(0, len(trimmed_2) // 3)]
+    )
 
     return trimmed_1, trimmed_2</code></pre>
 </details>
@@ -62,20 +69,20 @@ def trim_indels(alignment: AlignmentResult) -&gt; Tuple[str, str]:
 <section>
 <h2 class="section-title" id="header-functions">Functions</h2>
 <dl>
-<dt id="theanine-synthetase.dnds_prep.trim_indels"><code class="name flex">
-<span>def <span class="ident">trim_indels</span></span>(<span>alignment: alignment.AlignmentResult) ‑> Tuple[str, str]</span>
+<dt id="theanine-synthetase.dnds_prep.trim_for_dnds"><code class="name flex">
+<span>def <span class="ident">trim_for_dnds</span></span>(<span>alignment: alignment.AlignmentResult) ‑> Tuple[str, str]</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Trims indels from the provided alignment and returns a
-tuple (alignment_1, alignment_2).</p></div>
+<div class="desc"><p>Trims indels from the provided alignment, along with trailing nucleotides,
+and returns a tuple (alignment_1, alignment_2).</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
-<pre><code class="python">def trim_indels(alignment: AlignmentResult) -&gt; Tuple[str, str]:
+<pre><code class="python">def trim_for_dnds(alignment: AlignmentResult) -&gt; Tuple[str, str]:
     &#34;&#34;&#34;
-    Trims indels from the provided alignment and returns a
-    tuple (alignment_1, alignment_2).
+    Trims indels from the provided alignment, along with trailing nucleotides,
+    and returns a tuple (alignment_1, alignment_2).
     &#34;&#34;&#34;
 
     alignment_1 = alignment.get_alignment_1()
@@ -87,6 +94,13 @@ tuple (alignment_1, alignment_2).</p></div>
 
     trimmed_1 = &#34;&#34;.join([c for i, c in enumerate(alignment_1) if not i in indels_all])
     trimmed_2 = &#34;&#34;.join([c for i, c in enumerate(alignment_2) if not i in indels_all])
+
+    trimmed_1 = &#34;&#34;.join(
+        [trimmed_1[i * 3 : i * 3 + 3] for i in range(0, len(trimmed_1) // 3)]
+    )
+    trimmed_2 = &#34;&#34;.join(
+        [trimmed_2[i * 3 : i * 3 + 3] for i in range(0, len(trimmed_2) // 3)]
+    )
 
     return trimmed_1, trimmed_2</code></pre>
 </details>
@@ -109,7 +123,7 @@ tuple (alignment_1, alignment_2).</p></div>
 </li>
 <li><h3><a href="#header-functions">Functions</a></h3>
 <ul class="">
-<li><code><a title="theanine-synthetase.dnds_prep.trim_indels" href="#theanine-synthetase.dnds_prep.trim_indels">trim_indels</a></code></li>
+<li><code><a title="theanine-synthetase.dnds_prep.trim_for_dnds" href="#theanine-synthetase.dnds_prep.trim_for_dnds">trim_for_dnds</a></code></li>
 </ul>
 </li>
 </ul>
