@@ -1,6 +1,7 @@
 """Entrypoint analysis script."""
 
 import json
+from typing import List, Tuple
 
 from dnds import dnds
 import matplotlib.pyplot as plt
@@ -14,10 +15,14 @@ from dir_utils import get_data, make_output_dir, get_output
 from dnds_prep import trim_for_dnds
 from options import CLUSTER_COUNTS
 from parse_fasta import parse_fasta
+from sliding_window import sliding_window
 
 
 def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
-    """Produces graphs with the mismatch cluster sizes and saves them to the output directory."""
+    """
+    Produces graphs with the mismatch cluster sizes and saves them to the
+    output directory.
+    """
     sns.set_theme()
 
     for clusters in CLUSTER_COUNTS:
@@ -40,6 +45,35 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
         plt.xticks(np.arange(clusters), np.arange(1, clusters + 1))
 
         plt.savefig(get_output(f"{seq_filename}_clustered_mismatches_{clusters}.png"))
+
+
+def make_dnds_graph(
+    window_sizes: List[int], dnds_ratio_data: List[List[Tuple[int, float]]]
+):
+    """
+    Produces a single graph showing dN/dS ratios across a whole sequence and saves
+    it to the output directory. `window_sizes` and `dnds_ratio_data` are expected
+    to be in the same order with respect to the analyses they represent.
+    """
+
+
+def sliding_window_dnds(
+    sequence_1: str, sequence_2: str, window_size: int
+) -> List[Tuple[int, float]]:
+    """
+    Performs a sliding-window dN/dS analysis over the provided sequences.
+    Returns a list of tuples (start_base_pair, dnds_ratio).
+    """
+    windows = enumerate(
+        zip(
+            sliding_window(sequence_1, n=window_size),
+            sliding_window(sequence_2, n=window_size),
+        )
+    )
+    return [
+        (i * window_size, dnds(window_1, window_2))
+        for i, (window_1, window_2) in windows
+    ]
 
 
 def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):

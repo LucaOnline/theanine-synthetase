@@ -6,3 +6,6 @@ CLUSTER_COUNTS = [5, 10, 15, 20, 30]
 
 # Number of simulations to perform.
 SIMULATION_COUNT = 1000
+
+# Window sizes (in base pairs) to use during sliding-window dN/dS analysis.
+DNDS_WINDOW_SIZES = [9, 30, 90]
