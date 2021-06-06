@@ -30,6 +30,7 @@
 <pre><code class="python">&#34;&#34;&#34;Entrypoint analysis script.&#34;&#34;&#34;
 
 import json
+from typing import List, Tuple
 
 from dnds import dnds
 import matplotlib.pyplot as plt
@@ -43,10 +44,14 @@ from dir_utils import get_data, make_output_dir, get_output
 from dnds_prep import trim_for_dnds
 from options import CLUSTER_COUNTS
 from parse_fasta import parse_fasta
+from sliding_window import sliding_window
 
 
 def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
-    &#34;&#34;&#34;Produces graphs with the mismatch cluster sizes and saves them to the output directory.&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Produces graphs with the mismatch cluster sizes and saves them to the
+    output directory.
+    &#34;&#34;&#34;
     sns.set_theme()
 
     for clusters in CLUSTER_COUNTS:
@@ -69,6 +74,35 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
         plt.xticks(np.arange(clusters), np.arange(1, clusters + 1))
 
         plt.savefig(get_output(f&#34;{seq_filename}_clustered_mismatches_{clusters}.png&#34;))
+
+
+def make_dnds_graph(
+    window_sizes: List[int], dnds_ratio_data: List[List[Tuple[int, float]]]
+):
+    &#34;&#34;&#34;
+    Produces a single graph showing dN/dS ratios across a whole sequence and saves
+    it to the output directory. `window_sizes` and `dnds_ratio_data` are expected
+    to be in the same order with respect to the analyses they represent.
+    &#34;&#34;&#34;
+
+
+def sliding_window_dnds(
+    sequence_1: str, sequence_2: str, window_size: int
+) -&gt; List[Tuple[int, float]]:
+    &#34;&#34;&#34;
+    Performs a sliding-window dN/dS analysis over the provided sequences.
+    Returns a list of tuples (start_base_pair, dnds_ratio).
+    &#34;&#34;&#34;
+    windows = enumerate(
+        zip(
+            sliding_window(sequence_1, n=window_size),
+            sliding_window(sequence_2, n=window_size),
+        )
+    )
+    return [
+        (i * window_size, dnds(window_1, window_2))
+        for i, (window_1, window_2) in windows
+    ]
 
 
 def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
@@ -233,13 +267,17 @@ if __name__ == &#34;__main__&#34;:
 <span>def <span class="ident">make_cluster_graphs</span></span>(<span>seq_filename: str, alignment_result: alignment.AlignmentResult)</span>
 </code></dt>
 <dd>
-<div class="desc"><p>Produces graphs with the mismatch cluster sizes and saves them to the output directory.</p></div>
+<div class="desc"><p>Produces graphs with the mismatch cluster sizes and saves them to the
+output directory.</p></div>
 <details class="source">
 <summary>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
-    &#34;&#34;&#34;Produces graphs with the mismatch cluster sizes and saves them to the output directory.&#34;&#34;&#34;
+    &#34;&#34;&#34;
+    Produces graphs with the mismatch cluster sizes and saves them to the
+    output directory.
+    &#34;&#34;&#34;
     sns.set_theme()
 
     for clusters in CLUSTER_COUNTS:
@@ -264,6 +302,56 @@ if __name__ == &#34;__main__&#34;:
         plt.savefig(get_output(f&#34;{seq_filename}_clustered_mismatches_{clusters}.png&#34;))</code></pre>
 </details>
 </dd>
+<dt id="theanine-synthetase.analysis.make_dnds_graph"><code class="name flex">
+<span>def <span class="ident">make_dnds_graph</span></span>(<span>window_sizes: List[int], dnds_ratio_data: List[List[Tuple[int, float]]])</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Produces a single graph showing dN/dS ratios across a whole sequence and saves
+it to the output directory. <code>window_sizes</code> and <code>dnds_ratio_data</code> are expected
+to be in the same order with respect to the analyses they represent.</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def make_dnds_graph(
+    window_sizes: List[int], dnds_ratio_data: List[List[Tuple[int, float]]]
+):
+    &#34;&#34;&#34;
+    Produces a single graph showing dN/dS ratios across a whole sequence and saves
+    it to the output directory. `window_sizes` and `dnds_ratio_data` are expected
+    to be in the same order with respect to the analyses they represent.
+    &#34;&#34;&#34;</code></pre>
+</details>
+</dd>
+<dt id="theanine-synthetase.analysis.sliding_window_dnds"><code class="name flex">
+<span>def <span class="ident">sliding_window_dnds</span></span>(<span>sequence_1: str, sequence_2: str, window_size: int) ‑> List[Tuple[int, float]]</span>
+</code></dt>
+<dd>
+<div class="desc"><p>Performs a sliding-window dN/dS analysis over the provided sequences.
+Returns a list of tuples (start_base_pair, dnds_ratio).</p></div>
+<details class="source">
+<summary>
+<span>Expand source code</span>
+</summary>
+<pre><code class="python">def sliding_window_dnds(
+    sequence_1: str, sequence_2: str, window_size: int
+) -&gt; List[Tuple[int, float]]:
+    &#34;&#34;&#34;
+    Performs a sliding-window dN/dS analysis over the provided sequences.
+    Returns a list of tuples (start_base_pair, dnds_ratio).
+    &#34;&#34;&#34;
+    windows = enumerate(
+        zip(
+            sliding_window(sequence_1, n=window_size),
+            sliding_window(sequence_2, n=window_size),
+        )
+    )
+    return [
+        (i * window_size, dnds(window_1, window_2))
+        for i, (window_1, window_2) in windows
+    ]</code></pre>
+</details>
+</dd>
 </dl>
 </section>
 <section>
@@ -284,6 +372,8 @@ if __name__ == &#34;__main__&#34;:
 <ul class="">
 <li><code><a title="theanine-synthetase.analysis.analyze" href="#theanine-synthetase.analysis.analyze">analyze</a></code></li>
 <li><code><a title="theanine-synthetase.analysis.make_cluster_graphs" href="#theanine-synthetase.analysis.make_cluster_graphs">make_cluster_graphs</a></code></li>
+<li><code><a title="theanine-synthetase.analysis.make_dnds_graph" href="#theanine-synthetase.analysis.make_dnds_graph">make_dnds_graph</a></code></li>
+<li><code><a title="theanine-synthetase.analysis.sliding_window_dnds" href="#theanine-synthetase.analysis.sliding_window_dnds">sliding_window_dnds</a></code></li>
 </ul>
 </li>
 </ul>
