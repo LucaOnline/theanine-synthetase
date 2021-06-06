@@ -41,9 +41,18 @@ def trim_indels(alignment: AlignmentResult) -&gt; Tuple[str, str]:
     Trims indels from the provided alignment and returns a
     tuple (alignment_1, alignment_2).
     &#34;&#34;&#34;
+
     alignment_1 = alignment.get_alignment_1()
     alignment_2 = alignment.get_alignment_2()
-    return alignment_1.replace(&#34;-&#34;, &#34;&#34;), alignment_2.replace(&#34;-&#34;, &#34;&#34;)</code></pre>
+
+    indels_1 = [i for i, c in enumerate(alignment_1) if c == &#34;-&#34;]
+    indels_2 = [i for i, c in enumerate(alignment_2) if c == &#34;-&#34;]
+    indels_all = set(indels_1 + indels_2)
+
+    trimmed_1 = &#34;&#34;.join([c for i, c in enumerate(alignment_1) if not i in indels_all])
+    trimmed_2 = &#34;&#34;.join([c for i, c in enumerate(alignment_2) if not i in indels_all])
+
+    return trimmed_1, trimmed_2</code></pre>
 </details>
 </section>
 <section>
@@ -68,9 +77,18 @@ tuple (alignment_1, alignment_2).</p></div>
     Trims indels from the provided alignment and returns a
     tuple (alignment_1, alignment_2).
     &#34;&#34;&#34;
+
     alignment_1 = alignment.get_alignment_1()
     alignment_2 = alignment.get_alignment_2()
-    return alignment_1.replace(&#34;-&#34;, &#34;&#34;), alignment_2.replace(&#34;-&#34;, &#34;&#34;)</code></pre>
+
+    indels_1 = [i for i, c in enumerate(alignment_1) if c == &#34;-&#34;]
+    indels_2 = [i for i, c in enumerate(alignment_2) if c == &#34;-&#34;]
+    indels_all = set(indels_1 + indels_2)
+
+    trimmed_1 = &#34;&#34;.join([c for i, c in enumerate(alignment_1) if not i in indels_all])
+    trimmed_2 = &#34;&#34;.join([c for i, c in enumerate(alignment_2) if not i in indels_all])
+
+    return trimmed_1, trimmed_2</code></pre>
 </details>
 </dd>
 </dl>
