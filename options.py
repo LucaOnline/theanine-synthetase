@@ -9,4 +9,4 @@ SIMULATION_COUNT = 1000
 
 # Window sizes (in base pairs) to use during sliding-window dN/dS analysis.
 # If the window size is too small, there can be situations in which dS is 0.
-DNDS_WINDOW_SIZES = [180, 360, 540]
+DNDS_WINDOW_SIZES = [180]
