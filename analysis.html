@@ -52,14 +52,10 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
     for clusters in CLUSTER_COUNTS:
         # Build DataFrame of mismatch windows
         df = pd.DataFrame(
-            {
-                f&#34;{clusters}_clusters&#34;: alignment_result.clustered_mismatches(
-                    cluster_count=clusters
-                )
-            }
+            {&#34;clusters&#34;: alignment_result.clustered_mismatches(cluster_count=clusters)}
         )
 
-        sns.relplot(data=df[f&#34;{clusters}_clusters&#34;], kind=&#34;line&#34;)
+        sns.relplot(data=df[&#34;clusters&#34;], kind=&#34;line&#34;)
 
         plt.title(f&#34;Mismatches per alignment cluster ({clusters} clusters)&#34;)
         plt.xlabel(&#34;Cluster #&#34;)
@@ -68,6 +64,8 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
         fig = plt.gcf()
         fig.set_size_inches(7, 8)
 
+        y_max = df[&#34;clusters&#34;].max()
+        plt.yticks(np.arange(y_max + 1), np.arange(y_max + 1))
         plt.xticks(np.arange(clusters), np.arange(1, clusters + 1))
 
         plt.savefig(get_output(f&#34;{seq_filename}_clustered_mismatches_{clusters}.png&#34;))
@@ -247,14 +245,10 @@ if __name__ == &#34;__main__&#34;:
     for clusters in CLUSTER_COUNTS:
         # Build DataFrame of mismatch windows
         df = pd.DataFrame(
-            {
-                f&#34;{clusters}_clusters&#34;: alignment_result.clustered_mismatches(
-                    cluster_count=clusters
-                )
-            }
+            {&#34;clusters&#34;: alignment_result.clustered_mismatches(cluster_count=clusters)}
         )
 
-        sns.relplot(data=df[f&#34;{clusters}_clusters&#34;], kind=&#34;line&#34;)
+        sns.relplot(data=df[&#34;clusters&#34;], kind=&#34;line&#34;)
 
         plt.title(f&#34;Mismatches per alignment cluster ({clusters} clusters)&#34;)
         plt.xlabel(&#34;Cluster #&#34;)
@@ -263,6 +257,8 @@ if __name__ == &#34;__main__&#34;:
         fig = plt.gcf()
         fig.set_size_inches(7, 8)
 
+        y_max = df[&#34;clusters&#34;].max()
+        plt.yticks(np.arange(y_max + 1), np.arange(y_max + 1))
         plt.xticks(np.arange(clusters), np.arange(1, clusters + 1))
 
         plt.savefig(get_output(f&#34;{seq_filename}_clustered_mismatches_{clusters}.png&#34;))</code></pre>
