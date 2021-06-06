@@ -49,10 +49,10 @@ def sliding_window(sequence: str, n: int) -&gt; Iterator[str]:
     it = iter(sequence)
     result = tuple(islice(it, n))
     if len(result) == n:
-        yield result
+        yield &#34;&#34;.join(result)
     for elem in it:
         result = result[1:] + (elem,)
-        yield result</code></pre>
+        yield &#34;&#34;.join(result)</code></pre>
 </details>
 </section>
 <section>
@@ -85,10 +85,10 @@ e.g. s -&gt; (s0,s1,&hellip;s[n-1]), (s1,s2,&hellip;,sn), &hellip;</p>
     it = iter(sequence)
     result = tuple(islice(it, n))
     if len(result) == n:
-        yield result
+        yield &#34;&#34;.join(result)
     for elem in it:
         result = result[1:] + (elem,)
-        yield result</code></pre>
+        yield &#34;&#34;.join(result)</code></pre>
 </details>
 </dd>
 </dl>

@@ -42,7 +42,7 @@ from alignment import AlignmentResult, align_sequences
 from data_index import CSTSI, CSGSI, CSTSI_PROTEIN, CSGSI_PROTEIN
 from dir_utils import get_data, make_output_dir, get_output
 from dnds_prep import trim_for_dnds
-from options import CLUSTER_COUNTS
+from options import CLUSTER_COUNTS, DNDS_WINDOW_SIZES
 from parse_fasta import parse_fasta
 from sliding_window import sliding_window
 
@@ -77,13 +77,27 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
 
 
 def make_dnds_graph(
-    window_sizes: List[int], dnds_ratio_data: List[List[Tuple[int, float]]]
+    output_filename: str,
+    window_sizes: List[int],
+    dnds_ratio_data: List[List[Tuple[int, float]]],
 ):
     &#34;&#34;&#34;
     Produces a single graph showing dN/dS ratios across a whole sequence and saves
     it to the output directory. `window_sizes` and `dnds_ratio_data` are expected
     to be in the same order with respect to the analyses they represent.
     &#34;&#34;&#34;
+    sns.set_theme()
+
+    df = pd.DataFrame(
+        {
+            f&#34;{window_size}bp&#34;: dnds_ratios
+            for window_size, dnds_ratios in zip(window_sizes, dnds_ratio_data)
+        }
+    )
+
+    sns.relplot(data=df, kind=&#34;line&#34;)
+
+    plt.show()
 
 
 def sliding_window_dnds(
@@ -95,14 +109,11 @@ def sliding_window_dnds(
     &#34;&#34;&#34;
     windows = enumerate(
         zip(
-            sliding_window(sequence_1, n=window_size),
-            sliding_window(sequence_2, n=window_size),
+            list(sliding_window(sequence_1, n=window_size)),
+            list(sliding_window(sequence_2, n=window_size)),
         )
     )
-    return [
-        (i * window_size, dnds(window_1, window_2))
-        for i, (window_1, window_2) in windows
-    ]
+    return [(i * window_size, dnds(*window_pair)) for i, window_pair in windows]
 
 
 def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
@@ -134,7 +145,15 @@ def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
 
         if nucleotides:
             trimmed_alignment_1, trimmed_alignment_2 = trim_for_dnds(alignment_result)
-            dnds_ratio = dnds(trimmed_alignment_1, trimmed_alignment_2)
+            dnds_ratio_data = [
+                sliding_window_dnds(
+                    trimmed_alignment_1, trimmed_alignment_2, window_size=i
+                )
+                for i in DNDS_WINDOW_SIZES
+            ]
+            make_dnds_graph(
+                f&#34;{seq2_filename}_dnds_ratios.png&#34;, DNDS_WINDOW_SIZES, dnds_ratio_data
+            )
 
         # Output Supplementary Data 4
         make_output_dir()
@@ -150,7 +169,6 @@ def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
                 + f&#34;Largest mismatch size: {largest_mismatch}bp\n&#34;
                 + f&#34;Variance between clusters ({clusters} clusters): {clustered_mismatch_variance}\n&#34;
                 + f&#34;Clustered mismatches: {clustered_mismatches}\n&#34;
-                + (f&#34;dN/dS ratio: {dnds_ratio}\n&#34; if nucleotides else &#34;&#34;)
             )
 
         with open(get_output(f&#34;{seq2_filename}_{clusters}.meta.json&#34;), &#34;w+&#34;) as f:
@@ -161,9 +179,6 @@ def analyze(seq1_filename: str, seq2_filename: str, nucleotides: bool = False):
                 &#34;clustered_mismatch_variance&#34;: clustered_mismatch_variance,
                 &#34;clustered_mismatches&#34;: clustered_mismatches,
             }
-
-            if nucleotides:
-                json_output[&#34;dnds_ratio&#34;] = dnds_ratio
 
             json.dump(
                 json_output,
@@ -224,7 +239,15 @@ if __name__ == &#34;__main__&#34;:
 
         if nucleotides:
             trimmed_alignment_1, trimmed_alignment_2 = trim_for_dnds(alignment_result)
-            dnds_ratio = dnds(trimmed_alignment_1, trimmed_alignment_2)
+            dnds_ratio_data = [
+                sliding_window_dnds(
+                    trimmed_alignment_1, trimmed_alignment_2, window_size=i
+                )
+                for i in DNDS_WINDOW_SIZES
+            ]
+            make_dnds_graph(
+                f&#34;{seq2_filename}_dnds_ratios.png&#34;, DNDS_WINDOW_SIZES, dnds_ratio_data
+            )
 
         # Output Supplementary Data 4
         make_output_dir()
@@ -240,7 +263,6 @@ if __name__ == &#34;__main__&#34;:
                 + f&#34;Largest mismatch size: {largest_mismatch}bp\n&#34;
                 + f&#34;Variance between clusters ({clusters} clusters): {clustered_mismatch_variance}\n&#34;
                 + f&#34;Clustered mismatches: {clustered_mismatches}\n&#34;
-                + (f&#34;dN/dS ratio: {dnds_ratio}\n&#34; if nucleotides else &#34;&#34;)
             )
 
         with open(get_output(f&#34;{seq2_filename}_{clusters}.meta.json&#34;), &#34;w+&#34;) as f:
@@ -251,9 +273,6 @@ if __name__ == &#34;__main__&#34;:
                 &#34;clustered_mismatch_variance&#34;: clustered_mismatch_variance,
                 &#34;clustered_mismatches&#34;: clustered_mismatches,
             }
-
-            if nucleotides:
-                json_output[&#34;dnds_ratio&#34;] = dnds_ratio
 
             json.dump(
                 json_output,
@@ -303,7 +322,7 @@ output directory.</p></div>
 </details>
 </dd>
 <dt id="theanine-synthetase.analysis.make_dnds_graph"><code class="name flex">
-<span>def <span class="ident">make_dnds_graph</span></span>(<span>window_sizes: List[int], dnds_ratio_data: List[List[Tuple[int, float]]])</span>
+<span>def <span class="ident">make_dnds_graph</span></span>(<span>output_filename: str, window_sizes: List[int], dnds_ratio_data: List[List[Tuple[int, float]]])</span>
 </code></dt>
 <dd>
 <div class="desc"><p>Produces a single graph showing dN/dS ratios across a whole sequence and saves
@@ -314,13 +333,27 @@ to be in the same order with respect to the analyses they represent.</p></div>
 <span>Expand source code</span>
 </summary>
 <pre><code class="python">def make_dnds_graph(
-    window_sizes: List[int], dnds_ratio_data: List[List[Tuple[int, float]]]
+    output_filename: str,
+    window_sizes: List[int],
+    dnds_ratio_data: List[List[Tuple[int, float]]],
 ):
     &#34;&#34;&#34;
     Produces a single graph showing dN/dS ratios across a whole sequence and saves
     it to the output directory. `window_sizes` and `dnds_ratio_data` are expected
     to be in the same order with respect to the analyses they represent.
-    &#34;&#34;&#34;</code></pre>
+    &#34;&#34;&#34;
+    sns.set_theme()
+
+    df = pd.DataFrame(
+        {
+            f&#34;{window_size}bp&#34;: dnds_ratios
+            for window_size, dnds_ratios in zip(window_sizes, dnds_ratio_data)
+        }
+    )
+
+    sns.relplot(data=df, kind=&#34;line&#34;)
+
+    plt.show()</code></pre>
 </details>
 </dd>
 <dt id="theanine-synthetase.analysis.sliding_window_dnds"><code class="name flex">
@@ -342,14 +375,11 @@ Returns a list of tuples (start_base_pair, dnds_ratio).</p></div>
     &#34;&#34;&#34;
     windows = enumerate(
         zip(
-            sliding_window(sequence_1, n=window_size),
-            sliding_window(sequence_2, n=window_size),
+            list(sliding_window(sequence_1, n=window_size)),
+            list(sliding_window(sequence_2, n=window_size)),
         )
     )
-    return [
-        (i * window_size, dnds(window_1, window_2))
-        for i, (window_1, window_2) in windows
-    ]</code></pre>
+    return [(i * window_size, dnds(*window_pair)) for i, window_pair in windows]</code></pre>
 </details>
 </dd>
 </dl>
