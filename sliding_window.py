@@ -18,7 +18,7 @@ def sliding_window(sequence: str, n: int) -> Iterator[str]:
     it = iter(sequence)
     result = tuple(islice(it, n))
     if len(result) == n:
-        yield result
+        yield "".join(result)
     for elem in it:
         result = result[1:] + (elem,)
-        yield result
+        yield "".join(result)
