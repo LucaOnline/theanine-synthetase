@@ -100,6 +100,8 @@ def make_dnds_graph(
         fig = plt.gcf()
         fig.set_size_inches(18, 6)
 
+        plt.axhline(y=1.0, color=&#34;r&#34;, linestyle=&#34;--&#34;)
+
         plt.savefig(get_output(f&#34;{seq_filename}_dnds_{window_size}.png&#34;))
 
 
@@ -355,6 +357,8 @@ to be in the same order with respect to the analyses they represent.</p></div>
 
         fig = plt.gcf()
         fig.set_size_inches(18, 6)
+
+        plt.axhline(y=1.0, color=&#34;r&#34;, linestyle=&#34;--&#34;)
 
         plt.savefig(get_output(f&#34;{seq_filename}_dnds_{window_size}.png&#34;))</code></pre>
 </details>
