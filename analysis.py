@@ -71,6 +71,8 @@ def make_dnds_graph(
         fig = plt.gcf()
         fig.set_size_inches(18, 6)
 
+        plt.axhline(y=1.0, color="r", linestyle="--")
+
         plt.savefig(get_output(f"{seq_filename}_dnds_{window_size}.png"))
 
 
