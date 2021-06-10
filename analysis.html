@@ -70,8 +70,8 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
         fig.set_size_inches(7, 8)
 
         y_max = df[&#34;clusters&#34;].max()
-        plt.yticks(np.arange(y_max + 1), np.arange(y_max + 1))
         plt.xticks(np.arange(clusters), np.arange(1, clusters + 1))
+        plt.yticks(np.arange(y_max + 1), np.arange(y_max + 1))
 
         plt.savefig(get_output(f&#34;{seq_filename}_clustered_mismatches_{clusters}.png&#34;))
 
@@ -96,6 +96,7 @@ def make_dnds_graph(
 
         plt.title(f&#34;dN/dS ratios over windows of size {window_size}&#34;)
         plt.xlabel(&#34;window starting bp&#34;)
+        plt.ylabel(&#34;dN/dS ratio&#34;)
 
         fig = plt.gcf()
         fig.set_size_inches(18, 6)
@@ -317,8 +318,8 @@ output directory.</p></div>
         fig.set_size_inches(7, 8)
 
         y_max = df[&#34;clusters&#34;].max()
-        plt.yticks(np.arange(y_max + 1), np.arange(y_max + 1))
         plt.xticks(np.arange(clusters), np.arange(1, clusters + 1))
+        plt.yticks(np.arange(y_max + 1), np.arange(y_max + 1))
 
         plt.savefig(get_output(f&#34;{seq_filename}_clustered_mismatches_{clusters}.png&#34;))</code></pre>
 </details>
@@ -354,6 +355,7 @@ to be in the same order with respect to the analyses they represent.</p></div>
 
         plt.title(f&#34;dN/dS ratios over windows of size {window_size}&#34;)
         plt.xlabel(&#34;window starting bp&#34;)
+        plt.ylabel(&#34;dN/dS ratio&#34;)
 
         fig = plt.gcf()
         fig.set_size_inches(18, 6)
