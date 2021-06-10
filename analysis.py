@@ -41,8 +41,8 @@ def make_cluster_graphs(seq_filename: str, alignment_result: AlignmentResult):
         fig.set_size_inches(7, 8)
 
         y_max = df["clusters"].max()
-        plt.yticks(np.arange(y_max + 1), np.arange(y_max + 1))
         plt.xticks(np.arange(clusters), np.arange(1, clusters + 1))
+        plt.yticks(np.arange(y_max + 1), np.arange(y_max + 1))
 
         plt.savefig(get_output(f"{seq_filename}_clustered_mismatches_{clusters}.png"))
 
@@ -67,6 +67,7 @@ def make_dnds_graph(
 
         plt.title(f"dN/dS ratios over windows of size {window_size}")
         plt.xlabel("window starting bp")
+        plt.ylabel("dN/dS ratio")
 
         fig = plt.gcf()
         fig.set_size_inches(18, 6)
